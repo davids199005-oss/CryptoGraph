@@ -1,0 +1,10 @@
+.Layout {
+    height: 100%;
+    box-sizing: border-box;
+    display: grid;
+    grid-template-rows: 10% 35% 50% 5%;
+    text-align: center;
+    
+    
+    
+}
