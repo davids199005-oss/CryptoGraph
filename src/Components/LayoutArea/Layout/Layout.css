@@ -1,10 +1,12 @@
 .Layout {
-    height: 100%;
-    box-sizing: border-box;
+    min-height: 100vh;
     display: grid;
-    grid-template-rows: 10% 35% 50% 5%;
+    grid-template-rows: auto auto 1fr auto;
     text-align: center;
-    
-    
-    
+    width: 100%;
+}
+
+.Layout main {
+    min-height: 0;
+    overflow-y: auto;
 }

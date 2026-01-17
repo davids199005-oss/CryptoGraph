@@ -14,9 +14,9 @@ return (
             <Route path="/" element={<Navigate to="/Home" />} />
 
             <Route path="/Home" element={<Home />} />
-            <Route path="/About" element={<About />} />
             <Route path="/Reports" element={<Reports />} />
             <Route path="/Recommendation" element={<Recommendation />} />
+            <Route path="/About" element={<About />} />
             <Route path="*" element={<NotFoundPage />} />
 
 

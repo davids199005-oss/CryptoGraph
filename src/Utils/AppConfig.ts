@@ -7,6 +7,9 @@ class AppConfig {
 	public readonly CoinDetailsUrl =
     "https://api.coingecko.com/api/v3/coins/{id}";
 
+	public readonly CoinPriceUrl =
+    "https://api.coingecko.com/api/v3/simple/price?ids={id}&vs_currencies=usd,eur,ils";
+
 
     public readonly CryptoComparePriceMultiUrl =
     "https://min-api.cryptocompare.com/data/pricemulti?tsyms=usd&fsyms={symbols}";
