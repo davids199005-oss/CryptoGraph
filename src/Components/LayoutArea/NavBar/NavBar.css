@@ -24,7 +24,7 @@
 }
 
 .NavBar a {
-    color: white;
+    color: yellow;
     text-decoration: none;
     font-weight: 600;
     font-size: 1rem;
@@ -35,12 +35,13 @@
     z-index: 1;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    -webkit-text-stroke: 0.5px black;
 }
 
 .NavBar a:hover {
     background: rgba(255, 255, 255, 0.2);
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 8px rgba(245, 1, 1, 0.2);
 }
 
 .NavBar a.active {

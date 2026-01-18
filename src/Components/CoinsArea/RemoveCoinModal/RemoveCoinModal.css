@@ -1,0 +1,123 @@
+.RemoveCoinModal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+}
+
+.RemoveCoinModal-content {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.3s ease;
+}
+
+.RemoveCoinModal-content h2 {
+    margin: 0 0 12px 0;
+    color: #1a1a1a;
+    font-size: 1.5rem;
+}
+
+.RemoveCoinModal-description {
+    color: #666;
+    margin: 0 0 20px 0;
+    font-size: 0.95rem;
+}
+
+.RemoveCoinModal-coins-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.RemoveCoinModal-coin-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.RemoveCoinModal-coin-item:hover {
+    border-color: #667eea;
+    background: #f8f9fa;
+    transform: translateX(4px);
+}
+
+.RemoveCoinModal-coin-item img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.RemoveCoinModal-coin-info {
+    flex: 1;
+    text-align: left;
+}
+
+.RemoveCoinModal-coin-info h3 {
+    margin: 0 0 4px 0;
+    color: #1a1a1a;
+    font-size: 1rem;
+}
+
+.RemoveCoinModal-coin-info p {
+    margin: 0;
+    color: #666;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+}
+
+.RemoveCoinModal-cancel {
+    width: 100%;
+    padding: 10px;
+    background: #e0e0e0;
+    color: #333;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.RemoveCoinModal-cancel:hover {
+    background: #d0d0d0;
+    transform: scale(1.02);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}

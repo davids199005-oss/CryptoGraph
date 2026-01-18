@@ -3,7 +3,7 @@ import { Home } from "../../PageArea/Home/Home";
 import "./Routing.css";
 import { About } from "../../PageArea/About/About";
 import { Reports } from "../../PageArea/Reports/Reports";
-import { Recommendation } from "../../PageArea/Recommendations/Recommendations";
+import { Recommendations } from "../../PageArea/Recommendations/Recommendations";
 import { NotFoundPage } from "../../PageArea/NotFoundPage/NotFoundPage";
 
 export function Routing() {
@@ -15,7 +15,7 @@ return (
 
             <Route path="/Home" element={<Home />} />
             <Route path="/Reports" element={<Reports />} />
-            <Route path="/Recommendation" element={<Recommendation />} />
+            <Route path="/Recommendations" element={<Recommendations />} />
             <Route path="/About" element={<About />} />
             <Route path="*" element={<NotFoundPage />} />
 

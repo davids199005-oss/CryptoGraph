@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { CoinsModel } from "../../../Models/CoinsModel";
 import { coinsService } from "../../../Services/CoinsService";
+import { AppState } from "../../../Redux/AppState";
+import { selectedCoinsSliceActions } from "../../../Redux/CoinsSlice";
+import { RemoveCoinModal } from "../RemoveCoinModal/RemoveCoinModal";
 import "./CoinsCard.css";
 
 
@@ -17,9 +21,20 @@ type Prices = {
 
 export function CoinsCard(props: CoinsCardProps) {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const selectedCoinIds = useSelector((state: AppState) => state.selectedCoins);
     const [showPrices, setShowPrices] = useState(false);
     const [prices, setPrices] = useState<Prices | null>(null);
     const [loading, setLoading] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+    
+    const isSelected = props.coin.id ? selectedCoinIds.includes(props.coin.id) : false;
+    
+    const handleCoinRemovedFromModal = () => {
+        if (props.coin.id) {
+            dispatch(selectedCoinsSliceActions.toggleCoin(props.coin.id));
+        }
+    };
 
     function details() {
         navigate(`/coins/${props.coin.id}`);
@@ -50,8 +65,34 @@ export function CoinsCard(props: CoinsCardProps) {
         }).format(price);
     }
 
+    function handleToggleSelect(e: React.MouseEvent<HTMLDivElement>) {
+        e.stopPropagation();
+        
+        if (!props.coin.id) return;
+
+        if (isSelected) {
+            dispatch(selectedCoinsSliceActions.toggleCoin(props.coin.id));
+        } else {
+            if (selectedCoinIds.length >= 5) {
+                setShowModal(true);
+            } else {
+                dispatch(selectedCoinsSliceActions.toggleCoin(props.coin.id));
+            }
+        }
+    }
+
     return (
-        <div className="CoinsCard" onClick={details}>
+        <>
+        <div className={`CoinsCard ${isSelected ? 'selected' : ''}`} onClick={details}>
+            <div className="CoinsCard-select-switch" onClick={handleToggleSelect}>
+                <input 
+                    type="checkbox" 
+                    checked={isSelected}
+                    onChange={() => {}}
+                    onClick={handleToggleSelect}
+                />
+                <span className="CoinsCard-switch-label">{isSelected ? "Выбрано" : "Выбрать"}</span>
+            </div>
             <img src={props.coin.image} alt={props.coin.name} />
             <h3>{props.coin.name}</h3>
             <p>{props.coin.symbol}</p>
@@ -83,5 +124,12 @@ export function CoinsCard(props: CoinsCardProps) {
                 </div>
             )}
         </div>
+        {showModal && (
+            <RemoveCoinModal 
+                onClose={() => setShowModal(false)} 
+                onCoinRemoved={handleCoinRemovedFromModal}
+            />
+        )}
+        </>
     );
 }
