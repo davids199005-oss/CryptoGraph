@@ -90,6 +90,46 @@
 	transform: scale(0.98);
 }
 
+.price-toggle-btn {
+	position: relative;
+	background: #e0e0e0;
+	color: #666;
+	overflow: hidden;
+}
+
+.price-toggle-btn::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: -100%;
+	width: 100%;
+	height: 100%;
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	transition: left 0.3s ease;
+	z-index: 0;
+}
+
+.price-toggle-btn.active::before {
+	left: 0;
+}
+
+.price-toggle-btn.active {
+	color: white;
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.price-toggle-btn span,
+.price-toggle-btn {
+	position: relative;
+	z-index: 1;
+}
+
+.price-toggle-btn:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+	transform: none;
+}
+
 .price-info {
 	margin-top: 10px;
 	padding: 10px;
@@ -154,11 +194,51 @@
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.CoinsCard-select-switch input[type="checkbox"] {
-	width: 18px;
-	height: 18px;
+.coin-switch {
+	position: relative;
+	display: inline-block;
+	width: 44px;
+	height: 24px;
 	cursor: pointer;
-	accent-color: #667eea;
+}
+
+.coin-switch input[type="checkbox"] {
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+
+.coin-switch-slider {
+	position: absolute;
+	cursor: pointer;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: #ccc;
+	transition: 0.3s;
+	border-radius: 24px;
+}
+
+.coin-switch-slider:before {
+	position: absolute;
+	content: "";
+	height: 18px;
+	width: 18px;
+	left: 3px;
+	bottom: 3px;
+	background-color: white;
+	transition: 0.3s;
+	border-radius: 50%;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.coin-switch input:checked+.coin-switch-slider {
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.coin-switch input:checked+.coin-switch-slider:before {
+	transform: translateX(20px);
 }
 
 .CoinsCard-switch-label {

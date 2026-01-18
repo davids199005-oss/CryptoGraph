@@ -65,7 +65,7 @@ export function CoinsCard(props: CoinsCardProps) {
         }).format(price);
     }
 
-    function handleToggleSelect(e: React.MouseEvent<HTMLDivElement>) {
+    function handleToggleSelect(e: React.MouseEvent<HTMLDivElement> | React.ChangeEvent<HTMLInputElement>) {
         e.stopPropagation();
         
         if (!props.coin.id) return;
@@ -84,20 +84,34 @@ export function CoinsCard(props: CoinsCardProps) {
     return (
         <>
         <div className={`CoinsCard ${isSelected ? 'selected' : ''}`} onClick={details}>
-            <div className="CoinsCard-select-switch" onClick={handleToggleSelect}>
-                <input 
-                    type="checkbox" 
-                    checked={isSelected}
-                    onChange={() => {}}
-                    onClick={handleToggleSelect}
-                />
-                <span className="CoinsCard-switch-label">{isSelected ? "Выбрано" : "Выбрать"}</span>
+            <div className="CoinsCard-select-switch">
+                <label className="coin-switch" onClick={(e) => e.stopPropagation()}>
+                    <input 
+                        type="checkbox" 
+                        checked={isSelected}
+                        onChange={handleToggleSelect}
+                    />
+                    <span className="coin-switch-slider"></span>
+                </label>
+                <span 
+                    className="CoinsCard-switch-label"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        handleToggleSelect(e as any);
+                    }}
+                >
+                    {isSelected ? "Выбрано" : "Выбрать"}
+                </span>
             </div>
             <img src={props.coin.image} alt={props.coin.name} />
             <h3>{props.coin.name}</h3>
             <p>{props.coin.symbol}</p>
 
-            <button onClick={handleShowPrices} disabled={loading}>
+            <button 
+                className={`price-toggle-btn ${showPrices ? 'active' : ''}`}
+                onClick={handleShowPrices} 
+                disabled={loading}
+            >
                 {loading ? "Loading..." : showPrices ? "Hide Prices" : "Show Price"}
             </button>
 
