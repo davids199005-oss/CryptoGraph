@@ -31,6 +31,10 @@
 }
 
 .Header-content p {
-	font-size: 2rem;
+	color: rgb(237, 237, 83);
+	-webkit-text-stroke: 2px black;
+	font-size: 5rem;
 	font-weight: 600;
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
+

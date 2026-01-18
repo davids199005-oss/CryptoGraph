@@ -27,7 +27,7 @@ export function Header() {
             >
             </div>
             <div className="Header-content">
-                <p>Header Component</p>
+                <p>CryptoGraph</p>
             </div>
         </div>
     );

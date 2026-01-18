@@ -57,7 +57,7 @@ export function CoinsCard(props: CoinsCardProps) {
             <p>{props.coin.symbol}</p>
 
             <button onClick={handleShowPrices} disabled={loading}>
-                {loading ? "Loading..." : showPrices ? "Hide Prices" : "Show Prices"}
+                {loading ? "Loading..." : showPrices ? "Hide Prices" : "Show Price"}
             </button>
 
             {showPrices && prices && (
