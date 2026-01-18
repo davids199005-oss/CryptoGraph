@@ -3,7 +3,7 @@ import { Home } from "../../PageArea/Home/Home";
 import "./Routing.css";
 import { About } from "../../PageArea/About/About";
 import { Reports } from "../../PageArea/Reports/Reports";
-import { Recommendation } from "../../PageArea/Recommendation/Recommendation";
+import { Recommendation } from "../../PageArea/Recommendations/Recommendations";
 import { NotFoundPage } from "../../PageArea/NotFoundPage/NotFoundPage";
 
 export function Routing() {
