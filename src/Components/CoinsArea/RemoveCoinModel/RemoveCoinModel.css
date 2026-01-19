@@ -1,4 +1,4 @@
-.RemoveCoinModal-overlay {
+.RemoveCoinModel-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -12,7 +12,7 @@
     animation: fadeIn 0.3s ease;
 }
 
-.RemoveCoinModal-content {
+.RemoveCoinModel-content {
     background: white;
     border-radius: 12px;
     padding: 24px;
@@ -24,26 +24,26 @@
     animation: slideUp 0.3s ease;
 }
 
-.RemoveCoinModal-content h2 {
+.RemoveCoinModel-content h2 {
     margin: 0 0 12px 0;
     color: #1a1a1a;
     font-size: 1.5rem;
 }
 
-.RemoveCoinModal-description {
+.RemoveCoinModel-description {
     color: #666;
     margin: 0 0 20px 0;
     font-size: 0.95rem;
 }
 
-.RemoveCoinModal-coins-list {
+.RemoveCoinModel-coins-list {
     display: flex;
     flex-direction: column;
     gap: 12px;
     margin-bottom: 20px;
 }
 
-.RemoveCoinModal-coin-item {
+.RemoveCoinModel-coin-item {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -54,37 +54,37 @@
     transition: all 0.3s ease;
 }
 
-.RemoveCoinModal-coin-item:hover {
+.RemoveCoinModel-coin-item:hover {
     border-color: #667eea;
     background: #f8f9fa;
     transform: translateX(4px);
 }
 
-.RemoveCoinModal-coin-item img {
+.RemoveCoinModel-coin-item img {
     width: 40px;
     height: 40px;
     border-radius: 50%;
 }
 
-.RemoveCoinModal-coin-info {
+.RemoveCoinModel-coin-info {
     flex: 1;
     text-align: left;
 }
 
-.RemoveCoinModal-coin-info h3 {
+.RemoveCoinModel-coin-info h3 {
     margin: 0 0 4px 0;
     color: #1a1a1a;
     font-size: 1rem;
 }
 
-.RemoveCoinModal-coin-info p {
+.RemoveCoinModel-coin-info p {
     margin: 0;
     color: #666;
     font-size: 0.85rem;
     text-transform: uppercase;
 }
 
-.RemoveCoinModal-cancel {
+.RemoveCoinModel-cancel {
     width: 100%;
     padding: 10px;
     background: #e0e0e0;
@@ -97,7 +97,7 @@
     transition: all 0.3s ease;
 }
 
-.RemoveCoinModal-cancel:hover {
+.RemoveCoinModel-cancel:hover {
     background: #d0d0d0;
     transform: scale(1.02);
 }

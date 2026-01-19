@@ -3,12 +3,12 @@ import { AppState } from "../../../Redux/AppState";
 import { selectedCoinsSliceActions } from "../../../Redux/CoinsSlice";
 import "./RemoveCoinModel.css";
 
-type RemoveCoinModalProps = {
+type RemoveCoinModelProps = {
     onClose: () => void;
     onCoinRemoved?: () => void;
 };
 
-export function RemoveCoinModal(props: RemoveCoinModalProps) {
+export function RemoveCoinModel(props: RemoveCoinModelProps) {
     const dispatch = useDispatch();
     const selectedCoinIds = useSelector((state: AppState) => state.selectedCoins);
     const allCoins = useSelector((state: AppState) => state.coins);
@@ -26,21 +26,21 @@ export function RemoveCoinModal(props: RemoveCoinModalProps) {
     };
 
     return (
-        <div className="RemoveCoinModal-overlay" onClick={props.onClose}>
-            <div className="RemoveCoinModal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="RemoveCoinModel-overlay" onClick={props.onClose}>
+            <div className="RemoveCoinModel-content" onClick={(e) => e.stopPropagation()}>
                 <h2>Выберите монету для удаления</h2>
-                <p className="RemoveCoinModal-description">
+                <p className="RemoveCoinModel-description">
                     Вы достигли максимума в 5 монет. Пожалуйста, выберите монету для удаления:
                 </p>
-                <div className="RemoveCoinModal-coins-list">
+                <div className="RemoveCoinModel-coins-list">
                     {selectedCoins.map(coin => (
                         <div
                             key={coin.id}
-                            className="RemoveCoinModal-coin-item"
+                            className="RemoveCoinModel-coin-item"
                             onClick={() => handleRemoveCoin(coin.id || "")}
                         >
                             <img src={coin.image} alt={coin.name} />
-                            <div className="RemoveCoinModal-coin-info">
+                            <div className="RemoveCoinModel-coin-info">
                                 <h3>{coin.name}</h3>
                                 <p>{coin.symbol}</p>
                             </div>
@@ -48,7 +48,7 @@ export function RemoveCoinModal(props: RemoveCoinModalProps) {
                     ))}
                 </div>
                 <button
-                    className="RemoveCoinModal-cancel"
+                    className="RemoveCoinModel-cancel"
                     onClick={props.onClose}
                 >
                     Отмена

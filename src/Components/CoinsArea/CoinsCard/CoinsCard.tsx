@@ -5,7 +5,7 @@ import { CoinsModel } from "../../../Models/CoinsModel";
 import { coinsService } from "../../../Services/CoinsService";
 import { AppState } from "../../../Redux/AppState";
 import { selectedCoinsSliceActions } from "../../../Redux/CoinsSlice";
-import { RemoveCoinModal } from "../RemoveCoinModel/RemoveCoinModel";
+import { RemoveCoinModel } from "../RemoveCoinModel/RemoveCoinModel";
 import "./CoinsCard.css";
 
 
@@ -26,11 +26,11 @@ export function CoinsCard(props: CoinsCardProps) {
     const [showPrices, setShowPrices] = useState(false);
     const [prices, setPrices] = useState<Prices | null>(null);
     const [loading, setLoading] = useState(false);
-    const [showModal, setShowModal] = useState(false);
-    
+    const [showModel, setShowModel] = useState(false);
+
     const isSelected = props.coin.id ? selectedCoinIds.includes(props.coin.id) : false;
-    
-    const handleCoinRemovedFromModal = () => {
+
+    const handleCoinRemovedFromModel = () => {
         if (props.coin.id) {
             dispatch(selectedCoinsSliceActions.toggleCoin(props.coin.id));
         }
@@ -77,14 +77,14 @@ export function CoinsCard(props: CoinsCardProps) {
 
     function handleToggleSelect(e: React.MouseEvent<HTMLDivElement> | React.ChangeEvent<HTMLInputElement>) {
         e.stopPropagation();
-        
+
         if (!props.coin.id) return;
 
         if (isSelected) {
             dispatch(selectedCoinsSliceActions.toggleCoin(props.coin.id));
         } else {
             if (selectedCoinIds.length >= 5) {
-                setShowModal(true);
+                setShowModel(true);
             } else {
                 dispatch(selectedCoinsSliceActions.toggleCoin(props.coin.id));
             }
@@ -93,67 +93,67 @@ export function CoinsCard(props: CoinsCardProps) {
 
     return (
         <>
-        <div className={`CoinsCard ${isSelected ? 'selected' : ''}`} onClick={details}>
-            <div className="CoinsCard-select-switch">
-                <label className="coin-switch" onClick={(e) => e.stopPropagation()}>
-                    <input 
-                        type="checkbox" 
-                        checked={isSelected}
-                        onChange={handleToggleSelect}
-                    />
-                    <span className="coin-switch-slider"></span>
-                </label>
-                <span 
-                    className="CoinsCard-switch-label"
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        handleToggleSelect(e as any);
-                    }}
-                >
-                    
-                </span>
-            </div>
-            <img src={props.coin.image} alt={props.coin.name} />
-            <h3>{props.coin.name}</h3>
-            <p>{props.coin.symbol}</p>
+            <div className={`CoinsCard ${isSelected ? 'selected' : ''}`} onClick={details}>
+                <div className="CoinsCard-select-switch">
+                    <label className="coin-switch" onClick={(e) => e.stopPropagation()}>
+                        <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={handleToggleSelect}
+                        />
+                        <span className="coin-switch-slider"></span>
+                    </label>
+                    <span
+                        className="CoinsCard-switch-label"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            handleToggleSelect(e as any);
+                        }}
+                    >
 
-            <button 
-                className={`price-toggle-btn ${showPrices ? 'active' : ''}`}
-                onClick={handleShowPrices} 
-                disabled={loading}
-            >
-                {loading ? "Loading..." : showPrices ? "Hide Prices" : "Show Price"}
-            </button>
-
-            {showPrices && prices && (
-                <div className="price-info">
-                    <div className="price-item">
-                        <span className="price-label">USD</span>
-                        <span className="price-value">
-                            ${formatPrice(prices.usd)}
-                        </span>
-                    </div>
-                    <div className="price-item">
-                        <span className="price-label">EUR</span>
-                        <span className="price-value">
-                            €{formatPrice(prices.eur)}
-                        </span>
-                    </div>
-                    <div className="price-item">
-                        <span className="price-label">ILS</span>
-                        <span className="price-value">
-                            ₪{formatPrice(prices.ils)}
-                        </span>
-                    </div>
+                    </span>
                 </div>
+                <img src={props.coin.image} alt={props.coin.name} />
+                <h3>{props.coin.name}</h3>
+                <p>{props.coin.symbol}</p>
+
+                <button
+                    className={`price-toggle-btn ${showPrices ? 'active' : ''}`}
+                    onClick={handleShowPrices}
+                    disabled={loading}
+                >
+                    {loading ? "Loading..." : showPrices ? "Hide Prices" : "Show Price"}
+                </button>
+
+                {showPrices && prices && (
+                    <div className="price-info">
+                        <div className="price-item">
+                            <span className="price-label">USD</span>
+                            <span className="price-value">
+                                ${formatPrice(prices.usd)}
+                            </span>
+                        </div>
+                        <div className="price-item">
+                            <span className="price-label">EUR</span>
+                            <span className="price-value">
+                                €{formatPrice(prices.eur)}
+                            </span>
+                        </div>
+                        <div className="price-item">
+                            <span className="price-label">ILS</span>
+                            <span className="price-value">
+                                ₪{formatPrice(prices.ils)}
+                            </span>
+                        </div>
+                    </div>
+                )}
+            </div>
+            {showModel && (
+                <RemoveCoinModel
+                    onClose={() => setShowModel(false)}
+                    onCoinRemoved={handleCoinRemovedFromModel}
+                />
             )}
-        </div>
-        {showModal && (
-            <RemoveCoinModal 
-                onClose={() => setShowModal(false)} 
-                onCoinRemoved={handleCoinRemovedFromModal}
-            />
-        )}
         </>
     );
 }
