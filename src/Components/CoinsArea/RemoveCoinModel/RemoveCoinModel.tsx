@@ -1,8 +1,7 @@
-import { CoinsModel } from "../../../Models/CoinsModel";
 import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../../../Redux/AppState";
 import { selectedCoinsSliceActions } from "../../../Redux/CoinsSlice";
-import "./RemoveCoinModal.css";
+import "./RemoveCoinModel.css";
 
 type RemoveCoinModalProps = {
     onClose: () => void;
@@ -14,7 +13,7 @@ export function RemoveCoinModal(props: RemoveCoinModalProps) {
     const selectedCoinIds = useSelector((state: AppState) => state.selectedCoins);
     const allCoins = useSelector((state: AppState) => state.coins);
 
-    const selectedCoins = allCoins.filter(coin => 
+    const selectedCoins = allCoins.filter(coin =>
         coin.id && selectedCoinIds.includes(coin.id)
     );
 
@@ -35,8 +34,8 @@ export function RemoveCoinModal(props: RemoveCoinModalProps) {
                 </p>
                 <div className="RemoveCoinModal-coins-list">
                     {selectedCoins.map(coin => (
-                        <div 
-                            key={coin.id} 
+                        <div
+                            key={coin.id}
                             className="RemoveCoinModal-coin-item"
                             onClick={() => handleRemoveCoin(coin.id || "")}
                         >
@@ -48,8 +47,8 @@ export function RemoveCoinModal(props: RemoveCoinModalProps) {
                         </div>
                     ))}
                 </div>
-                <button 
-                    className="RemoveCoinModal-cancel" 
+                <button
+                    className="RemoveCoinModal-cancel"
                     onClick={props.onClose}
                 >
                     Отмена

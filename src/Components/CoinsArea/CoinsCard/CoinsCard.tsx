@@ -5,7 +5,7 @@ import { CoinsModel } from "../../../Models/CoinsModel";
 import { coinsService } from "../../../Services/CoinsService";
 import { AppState } from "../../../Redux/AppState";
 import { selectedCoinsSliceActions } from "../../../Redux/CoinsSlice";
-import { RemoveCoinModal } from "../RemoveCoinModal/RemoveCoinModal";
+import { RemoveCoinModal } from "../RemoveCoinModel/RemoveCoinModel";
 import "./CoinsCard.css";
 
 
@@ -37,7 +37,17 @@ export function CoinsCard(props: CoinsCardProps) {
     };
 
     function details() {
-        navigate(`/coins/${props.coin.id}`);
+        if (!props.coin.id) {
+            console.error("Coin ID is missing");
+            return;
+        }
+        const coinId = props.coin.id.trim();
+        if (!coinId) {
+            console.error("Coin ID is empty after trim");
+            return;
+        }
+        console.log("Navigating to:", `/coins/${coinId}`);
+        navigate(`/coins/${coinId}`);
     }
 
     async function handleShowPrices(e: React.MouseEvent<HTMLButtonElement>) {
@@ -100,7 +110,7 @@ export function CoinsCard(props: CoinsCardProps) {
                         handleToggleSelect(e as any);
                     }}
                 >
-                    {isSelected ? "Выбрано" : "Выбрать"}
+                    
                 </span>
             </div>
             <img src={props.coin.image} alt={props.coin.name} />

@@ -5,24 +5,23 @@ import { About } from "../../PageArea/About/About";
 import { Reports } from "../../PageArea/Reports/Reports";
 import { Recommendations } from "../../PageArea/Recommendations/Recommendations";
 import { NotFoundPage } from "../../PageArea/NotFoundPage/NotFoundPage";
+import { CoinsDetails } from "../../CoinsArea/CoinsDetails/CoinsDetails";
 
 export function Routing() {
-return (
-<div className="Routing">
+    return (
+        <div className="Routing">
 
-<Routes>
-            <Route path="/" element={<Navigate to="/Home" />} />
+            <Routes>
+                <Route path="/" element={<Navigate to="/Home" />} />
 
-            <Route path="/Home" element={<Home />} />
-            <Route path="/Reports" element={<Reports />} />
-            <Route path="/Recommendations" element={<Recommendations />} />
-            <Route path="/About" element={<About />} />
-            <Route path="*" element={<NotFoundPage />} />
+                <Route path="/Home" element={<Home />} />
+                <Route path="/coins/:coinId" element={<CoinsDetails />} />
+                <Route path="/Reports" element={<Reports />} />
+                <Route path="/Recommendations" element={<Recommendations />} />
+                <Route path="/About" element={<About />} />
+                <Route path="*" element={<NotFoundPage />} />
+            </Routes>
 
-
-
-</Routes>
-
-</div>
-);
+        </div>
+    );
 }
