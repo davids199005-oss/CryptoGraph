@@ -1,11 +1,11 @@
 /**
- * Утилиты для работы с localStorage
+ * Utilities for working with localStorage
  */
 
 const SELECTED_COINS_KEY = 'cryptograph_selected_coins';
 
 /**
- * Сохраняет выбранные монеты в localStorage
+ * Saves selected coins to localStorage
  */
 export function saveSelectedCoinsToStorage(coinIds: string[]): void {
     try {
@@ -16,14 +16,14 @@ export function saveSelectedCoinsToStorage(coinIds: string[]): void {
 }
 
 /**
- * Загружает выбранные монеты из localStorage
+ * Loads selected coins from localStorage
  */
 export function loadSelectedCoinsFromStorage(): string[] {
     try {
         const stored = localStorage.getItem(SELECTED_COINS_KEY);
         if (stored) {
             const parsed = JSON.parse(stored);
-            // Проверяем, что это массив строк
+            // Verify that it's an array of strings
             if (Array.isArray(parsed) && parsed.every(id => typeof id === 'string')) {
                 return parsed;
             }
@@ -35,7 +35,7 @@ export function loadSelectedCoinsFromStorage(): string[] {
 }
 
 /**
- * Очищает сохраненные выбранные монеты из localStorage
+ * Clears saved selected coins from localStorage
  */
 export function clearSelectedCoinsFromStorage(): void {
     try {

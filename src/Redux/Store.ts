@@ -3,7 +3,7 @@ import { AppState } from "./AppState";
 import { coinsSlice, selectedCoinsSlice } from "./CoinsSlice";
 import { loadSelectedCoinsFromStorage, saveSelectedCoinsToStorage } from "../Utils/LocalStorageUtils";
 
-// Загружаем сохраненные выбранные монеты из localStorage
+// Load saved selected coins from localStorage
 const preloadedState: Partial<AppState> = {
     selectedCoins: loadSelectedCoinsFromStorage(),
 };
@@ -13,10 +13,10 @@ export const store = configureStore<AppState>({
         coins: coinsSlice.reducer,
         selectedCoins: selectedCoinsSlice.reducer,
     },
-    preloadedState: preloadedState as any,
+    preloadedState: preloadedState as Partial<AppState>,
 });
 
-// Подписываемся на изменения selectedCoins и сохраняем в localStorage
+// Subscribe to selectedCoins changes and save to localStorage
 store.subscribe(() => {
     const state = store.getState();
     if (state.selectedCoins) {

@@ -1,38 +1,38 @@
 import axios from "axios";
 import { CoinsModel } from "../Models/CoinsModel";
-import { store } from "../Redux/Store";
 import { appConfig } from "../Utils/AppConfig";
-import { coinsSlice } from "../Redux/CoinsSlice";
+import {
+	CoinGeckoPriceResponse,
+	CoinGeckoCoinDetailsResponse,
+	CryptoComparePriceResponse,
+	CoinPriceData,
+	CoinRecommendationData,
+} from "../Models/ApiTypes";
 
 class CoinsService {
 
 
 
-	public async get100CoinsList(): Promise<CoinsModel[]> {
-        if (store.getState().coins.length > 0) {
-            return store.getState().coins;
+	public async getCoinsList(): Promise<CoinsModel[]> {
+        try {
+            const response = await axios.get<CoinsModel[]>(appConfig.CoinListUrl);
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching coins list:", error);
+            throw error;
         }
-
-        const response = await axios.get<CoinsModel[]>(appConfig.CoinListUrl);
-        
-        const coins = response.data;
-
-        const action = coinsSlice.actions.initCoins(coins);
-        store.dispatch(action);
-
-        return coins;
     }
 
-	public async getCoinPrices(coinId: string): Promise<{usd: number, eur: number, ils: number} | null> {
+	public async getCoinPrices(coinId: string): Promise<CoinPriceData | null> {
         try {
             const url = appConfig.CoinPriceUrl.replace("{id}", coinId);
-            const response = await axios.get<{[key: string]: {usd: number, eur: number, ils: number}}>(url);
+            const response = await axios.get<CoinGeckoPriceResponse>(url);
             const prices = response.data[coinId];
-            if (prices) {
+            if (prices && prices.usd !== undefined) {
                 return {
                     usd: prices.usd,
-                    eur: prices.eur,
-                    ils: prices.ils
+                    eur: prices.eur ?? 0,
+                    ils: prices.ils ?? 0
                 };
             }
             return null;
@@ -42,10 +42,10 @@ class CoinsService {
         }
     }
 
-	public async getCoinDetails(coinId: string): Promise<any | null> {
+	public async getCoinDetails(coinId: string): Promise<CoinGeckoCoinDetailsResponse | null> {
         try {
             const url = appConfig.CoinDetailsUrl.replace("{id}", coinId);
-            const response = await axios.get(url);
+            const response = await axios.get<CoinGeckoCoinDetailsResponse>(url);
             return response.data;
         } catch (error) {
             console.error("Error fetching coin details:", error);
@@ -53,10 +53,10 @@ class CoinsService {
         }
     }
 
-	public async getCoinDetailsWithMarketData(coinId: string): Promise<any | null> {
+	public async getCoinDetailsWithMarketData(coinId: string): Promise<CoinGeckoCoinDetailsResponse | null> {
         try {
             const url = `${appConfig.CoinDetailsUrl.replace("{id}", coinId)}?market_data=true`;
-            const response = await axios.get(url);
+            const response = await axios.get<CoinGeckoCoinDetailsResponse>(url);
             return response.data;
         } catch (error) {
             console.error("Error fetching coin details with market data:", error);
@@ -100,7 +100,7 @@ class CoinsService {
             // Get symbols for CryptoCompare API
             const symbols = coins.map(coin => coin.symbol.toUpperCase()).join(",");
             const url = appConfig.CryptoComparePriceMultiUrl.replace("{symbols}", symbols);
-            const response = await axios.get<Record<string, { USD: number }>>(url);
+            const response = await axios.get<CryptoComparePriceResponse>(url);
 
             // Map coin IDs to prices (using coin.id as key to match with selected coins)
             const priceMap = new Map<string, number>();
@@ -118,6 +118,31 @@ class CoinsService {
             return new Map();
         }
     }
+
+	public async getCoinDataForRecommendation(coinId: string): Promise<CoinRecommendationData | null> {
+		try {
+			const url = appConfig.CoinDetailsUrl.replace("{id}", coinId);
+			const response = await axios.get<CoinGeckoCoinDetailsResponse>(url);
+
+			const marketData = response.data.market_data;
+			if (!marketData) {
+				return null;
+			}
+
+			return {
+				name: response.data.name || "",
+				current_price_usd: marketData.current_price?.usd ?? 0,
+				market_cap_usd: marketData.market_cap?.usd ?? 0,
+				volume_24h_usd: marketData.total_volume?.usd ?? 0,
+				price_change_percentage_30d_in_currency: marketData.price_change_percentage_30d_in_currency?.usd ?? 0,
+				price_change_percentage_60d_in_currency: marketData.price_change_percentage_60d_in_currency?.usd ?? 0,
+				price_change_percentage_200d_in_currency: marketData.price_change_percentage_200d_in_currency?.usd ?? 0,
+			};
+		} catch (error) {
+			console.error("Error fetching coin data for recommendation:", error);
+			return null;
+		}
+	}
 
 }
 

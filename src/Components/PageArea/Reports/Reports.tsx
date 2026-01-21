@@ -4,6 +4,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import { AppState } from "../../../Redux/AppState";
 import { CoinsModel } from "../../../Models/CoinsModel";
 import { coinsService } from "../../../Services/CoinsService";
+import { PriceFormatter } from "../../../Utils/PriceFormatter";
 import "./Reports.css";
 
 type OhlcCandle = {
@@ -64,6 +65,11 @@ export function Reports() {
                     .filter(coin => coin.id && coin.symbol)
                     .map(coin => ({ id: coin.id!, symbol: coin.symbol! }));
 
+                if (coinsForApi.length === 0) {
+                    setLoading(false);
+                    return;
+                }
+
                 // Single API request to CryptoCompare for all selected coins
                 const pricesMap = await coinsService.getMultipleCoinsPricesBySymbols(coinsForApi);
 
@@ -73,87 +79,92 @@ export function Reports() {
                 const timeString = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
                 const timestamp = Math.floor(now.getTime() / 1000);
 
-                // Update price history with OHLC data
-                let previousDataPoint: PriceDataPoint | undefined;
+                // Update price history with OHLC data and calculate reports
                 setPriceHistory(prev => {
-                    previousDataPoint = prev[prev.length - 1];
-
+                    const previousDataPoint = prev[prev.length - 1];
                     const newDataPoint: PriceDataPoint = { time: timeString, timestamp };
+
                     selectedCoins.forEach(coin => {
-                        if (coin.id) {
-                            const currentPrice = pricesMap.get(coin.id);
-                            if (currentPrice !== undefined) {
-                                const previousPrice = previousDataPoint?.[coin.id];
-                                let candle: OhlcCandle;
+                        if (!coin.id) return;
 
-                                if (previousPrice && typeof previousPrice === "object" && "close" in previousPrice) {
-                                    // Use previous close as open
-                                    const open = previousPrice.close;
-                                    const close = currentPrice;
-                                    const high = Math.max(open, close) * 1.002;
-                                    const low = Math.min(open, close) * 0.998;
-                                    candle = { open, high, low, close };
-                                } else if (typeof previousPrice === "number") {
-                                    // Legacy format - previous price was a number
-                                    const open = previousPrice;
-                                    const close = currentPrice;
-                                    const high = Math.max(open, close) * 1.002;
-                                    const low = Math.min(open, close) * 0.998;
-                                    candle = { open, high, low, close };
-                                } else {
-                                    // First candle - use current price for all
-                                    candle = {
-                                        open: currentPrice,
-                                        high: currentPrice * 1.002,
-                                        low: currentPrice * 0.998,
-                                        close: currentPrice
-                                    };
-                                }
+                        const currentPrice = pricesMap.get(coin.id);
+                        if (currentPrice === undefined) return;
 
-                                newDataPoint[coin.id] = candle;
-                            }
+                        const previousPrice = previousDataPoint?.[coin.id];
+                        let candle: OhlcCandle;
+
+                        if (previousPrice && typeof previousPrice === "object" && "close" in previousPrice) {
+                            // Use previous close as open
+                            const open = previousPrice.close;
+                            const close = currentPrice;
+                            const high = Math.max(open, close) * 1.002;
+                            const low = Math.min(open, close) * 0.998;
+                            candle = { open, high, low, close };
+                        } else if (typeof previousPrice === "number") {
+                            // Legacy format - previous price was a number
+                            const open = previousPrice;
+                            const close = currentPrice;
+                            const high = Math.max(open, close) * 1.002;
+                            const low = Math.min(open, close) * 0.998;
+                            candle = { open, high, low, close };
+                        } else {
+                            // First candle - use current price for all
+                            candle = {
+                                open: currentPrice,
+                                high: currentPrice * 1.002,
+                                low: currentPrice * 0.998,
+                                close: currentPrice
+                            };
                         }
+
+                        newDataPoint[coin.id] = candle;
                     });
 
                     const updated = [...prev, newDataPoint];
-                    // Keep only last 30 data points
-                    return updated.slice(-30);
+                    const newHistory = updated.slice(-30);
+
+                    // Calculate reports based on previous and current data points
+                    const reports: CoinReport[] = selectedCoins
+                        .filter(coin => coin.id)
+                        .map(coin => {
+                            const currentPrice = pricesMap.get(coin.id!) || 0;
+                            const previousData = previousDataPoint?.[coin.id!];
+                            let previousPrice: number;
+
+                            if (previousData && typeof previousData === "object" && "close" in previousData) {
+                                previousPrice = previousData.close;
+                            } else if (typeof previousData === "number") {
+                                previousPrice = previousData;
+                            } else {
+                                previousPrice = currentPrice;
+                            }
+
+                            const priceChange = currentPrice - previousPrice;
+                            const priceChangePercent = previousPrice > 0 ? (priceChange / previousPrice) * 100 : 0;
+
+                            return {
+                                coin,
+                                currentPrice,
+                                previousPrice,
+                                priceChange,
+                                priceChangePercent,
+                            };
+                        });
+
+                    // Update reports state (this is safe as it's in a state updater function)
+                    setCoinReports(reports);
+
+                    return newHistory;
                 });
 
-                // Update coin reports using previous price from closure
-                const reports: CoinReport[] = selectedCoins
-                    .filter(coin => coin.id)
-                    .map(coin => {
-                        const currentPrice = pricesMap.get(coin.id!) || 0;
-                        const previousData = previousDataPoint?.[coin.id!];
-                        let previousPrice: number;
-
-                        if (previousData && typeof previousData === "object" && "close" in previousData) {
-                            previousPrice = previousData.close;
-                        } else if (typeof previousData === "number") {
-                            previousPrice = previousData;
-                        } else {
-                            previousPrice = currentPrice;
-                        }
-
-                        const priceChange = currentPrice - previousPrice;
-                        const priceChangePercent = previousPrice > 0 ? (priceChange / previousPrice) * 100 : 0;
-
-                        return {
-                            coin,
-                            currentPrice,
-                            previousPrice,
-                            priceChange,
-                            priceChangePercent,
-                        };
-                    });
-
-                setCoinReports(reports);
                 setLastUpdated(now);
             } catch (error) {
                 console.error("Error fetching coin prices:", error);
+                // Set error state or show user-friendly message
             } finally {
-                setLoading(false);
+                if (!isCancelled) {
+                    setLoading(false);
+                }
             }
         }
 
@@ -182,14 +193,6 @@ export function Reports() {
         "#6366f1",      // Indigo
     ], []);
 
-    const formatPrice = (price: number): string => {
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 6
-        }).format(price);
-    };
 
     // Transform price history to recharts format
     const chartData = useMemo(() => {
@@ -266,11 +269,13 @@ export function Reports() {
                                         dataKey="time"
                                         stroke="#1a1a1a"
                                         style={{ fontSize: '12px' }}
+                                        label={{ value: 'Time', position: 'insideBottom', offset: -5, style: { textAnchor: 'middle', fill: '#666', fontSize: '14px', fontWeight: '600' } }}
                                     />
                                     <YAxis
                                         stroke="#1a1a1a"
                                         style={{ fontSize: '12px' }}
                                         domain={['auto', 'auto']}
+                                        label={{ value: 'Price (USD)', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#666', fontSize: '14px', fontWeight: '600' } }}
                                     />
                                     <Tooltip
                                         contentStyle={{
@@ -280,7 +285,7 @@ export function Reports() {
                                         }}
                                         formatter={(value: number | undefined) => {
                                             if (value === undefined) return '';
-                                            return formatPrice(value);
+                                            return PriceFormatter.formatCurrency(value);
                                         }}
                                     />
                                     <Legend />
@@ -328,7 +333,7 @@ export function Reports() {
 
                                 <div className="Reports-coin-price">
                                     <span className="Reports-price-label">Current Price:</span>
-                                    <span className="Reports-price-value">{formatPrice(report.currentPrice)}</span>
+                                    <span className="Reports-price-value">{PriceFormatter.formatCurrency(report.currentPrice)}</span>
                                 </div>
 
                                 <div className="Reports-coin-change">
@@ -340,21 +345,21 @@ export function Reports() {
                                         }}
                                     >
                                         {report.priceChange >= 0 ? "+" : ""}{report.priceChangePercent.toFixed(2)}%
-                                        ({formatPrice(report.priceChange)})
+                                        ({PriceFormatter.formatCurrency(report.priceChange)})
                                     </span>
                                 </div>
 
                                 {report.coin.market_cap && (
                                     <div className="Reports-coin-info">
                                         <span>Market Cap:</span>
-                                        <span>{formatPrice(report.coin.market_cap)}</span>
+                                        <span>{PriceFormatter.formatCurrency(report.coin.market_cap)}</span>
                                     </div>
                                 )}
 
                                 {report.coin.total_volume && (
                                     <div className="Reports-coin-info">
                                         <span>Volume:</span>
-                                        <span>{formatPrice(report.coin.total_volume)}</span>
+                                        <span>{PriceFormatter.formatCurrency(report.coin.total_volume)}</span>
                                     </div>
                                 )}
 

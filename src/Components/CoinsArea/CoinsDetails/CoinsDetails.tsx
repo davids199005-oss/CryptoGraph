@@ -2,15 +2,16 @@ import { useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { AppState } from "../../../Redux/AppState";
+import { PriceFormatter } from "../../../Utils/PriceFormatter";
 import "./CoinsDetails.css";
 
 export function CoinsDetails() {
     const params = useParams<{ coinId?: string }>();
     const navigate = useNavigate();
     const coinId = params.coinId;
-    
+
     const allCoins = useSelector((state: AppState) => state.coins);
-    
+
     const coin = useMemo(() => {
         if (!coinId) return undefined;
         return allCoins.find(c => c.id === coinId);
@@ -34,29 +35,6 @@ export function CoinsDetails() {
         );
     }
 
-    const formatPrice = (price: number | undefined): string => {
-        if (!price) return "N/A";
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 6
-        }).format(price);
-    };
-
-    const formatNumber = (num: number | undefined): string => {
-        if (!num) return "N/A";
-        return new Intl.NumberFormat('en-US').format(num);
-    };
-
-    const formatDate = (dateString: string | undefined): string => {
-        if (!dateString) return "N/A";
-        try {
-            return new Date(dateString).toLocaleDateString();
-        } catch {
-            return dateString;
-        }
-    };
 
     return (
         <div className="CoinsDetails">
@@ -94,7 +72,7 @@ export function CoinsDetails() {
                         {coin.last_updated && (
                             <div className="info-item">
                                 <span className="info-label">Last Updated:</span>
-                                <span className="info-value">{formatDate(coin.last_updated)}</span>
+                                <span className="info-value">{PriceFormatter.formatDate(coin.last_updated)}</span>
                             </div>
                         )}
                     </div>
@@ -103,7 +81,7 @@ export function CoinsDetails() {
                     <div className="info-grid">
                         <div className="info-item">
                             <span className="info-label">Current Price (USD):</span>
-                            <span className="info-value">{formatPrice(coin.current_price)}</span>
+                            <span className="info-value">{PriceFormatter.formatCurrency(coin.current_price)}</span>
                         </div>
                         <div className="info-item">
                             <span className="info-label">Market Cap:</span>
@@ -130,8 +108,8 @@ export function CoinsDetails() {
                             <span className="info-value" style={{
                                 color: (coin.price_change_24h || 0) >= 0 ? "#16a34a" : "#dc2626"
                             }}>
-                                {coin.price_change_24h !== undefined ? 
-                                    `${coin.price_change_24h >= 0 ? "+" : ""}${coin.price_change_24h.toFixed(2)}` : 
+                                {coin.price_change_24h !== undefined ?
+                                    `${coin.price_change_24h >= 0 ? "+" : ""}${coin.price_change_24h.toFixed(2)}` :
                                     "N/A"}
                             </span>
                         </div>
@@ -140,8 +118,8 @@ export function CoinsDetails() {
                             <span className="info-value" style={{
                                 color: (coin.price_change_percentage_24h || 0) >= 0 ? "#16a34a" : "#dc2626"
                             }}>
-                                {coin.price_change_percentage_24h !== undefined ? 
-                                    `${coin.price_change_percentage_24h >= 0 ? "+" : ""}${coin.price_change_percentage_24h.toFixed(2)}%` : 
+                                {coin.price_change_percentage_24h !== undefined ?
+                                    `${coin.price_change_percentage_24h >= 0 ? "+" : ""}${coin.price_change_percentage_24h.toFixed(2)}%` :
                                     "N/A"}
                             </span>
                         </div>
@@ -150,8 +128,8 @@ export function CoinsDetails() {
                             <span className="info-value" style={{
                                 color: (coin.market_cap_change_24h || 0) >= 0 ? "#16a34a" : "#dc2626"
                             }}>
-                                {coin.market_cap_change_24h !== undefined ? 
-                                    `${coin.market_cap_change_24h >= 0 ? "+" : ""}${formatPrice(coin.market_cap_change_24h)}` : 
+                                {coin.market_cap_change_24h !== undefined ?
+                                    `${coin.market_cap_change_24h >= 0 ? "+" : ""}${formatPrice(coin.market_cap_change_24h)}` :
                                     "N/A"}
                             </span>
                         </div>
@@ -160,8 +138,8 @@ export function CoinsDetails() {
                             <span className="info-value" style={{
                                 color: (coin.market_cap_change_percentage_24h || 0) >= 0 ? "#16a34a" : "#dc2626"
                             }}>
-                                {coin.market_cap_change_percentage_24h !== undefined ? 
-                                    `${coin.market_cap_change_percentage_24h >= 0 ? "+" : ""}${coin.market_cap_change_percentage_24h.toFixed(2)}%` : 
+                                {coin.market_cap_change_percentage_24h !== undefined ?
+                                    `${coin.market_cap_change_percentage_24h >= 0 ? "+" : ""}${coin.market_cap_change_percentage_24h.toFixed(2)}%` :
                                     "N/A"}
                             </span>
                         </div>
@@ -171,7 +149,7 @@ export function CoinsDetails() {
                     <div className="info-grid">
                         <div className="info-item">
                             <span className="info-label">Circulating Supply:</span>
-                            <span className="info-value">{formatNumber(coin.circulating_supply)}</span>
+                            <span className="info-value">{PriceFormatter.formatNumber(coin.circulating_supply)}</span>
                         </div>
                         <div className="info-item">
                             <span className="info-label">Total Supply:</span>

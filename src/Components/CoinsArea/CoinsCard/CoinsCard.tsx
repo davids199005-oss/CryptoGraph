@@ -6,6 +6,7 @@ import { coinsService } from "../../../Services/CoinsService";
 import { AppState } from "../../../Redux/AppState";
 import { selectedCoinsSliceActions } from "../../../Redux/CoinsSlice";
 import { RemoveCoinModel } from "../RemoveCoinModel/RemoveCoinModel";
+import { PriceFormatter } from "../../../Utils/PriceFormatter";
 import "./CoinsCard.css";
 
 
@@ -26,7 +27,7 @@ export function CoinsCard(props: CoinsCardProps) {
     const [showPrices, setShowPrices] = useState(false);
     const [prices, setPrices] = useState<Prices | null>(null);
     const [loading, setLoading] = useState(false);
-    const [showModel, setShowModel] = useState(false);
+    const [showModal, setShowModal] = useState(false);
 
     const isSelected = props.coin.id ? selectedCoinIds.includes(props.coin.id) : false;
 
@@ -68,12 +69,6 @@ export function CoinsCard(props: CoinsCardProps) {
         }
     }
 
-    function formatPrice(price: number): string {
-        return new Intl.NumberFormat('en-US', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 6
-        }).format(price);
-    }
 
     function handleToggleSelect(e: React.MouseEvent<HTMLDivElement> | React.ChangeEvent<HTMLInputElement>) {
         e.stopPropagation();
@@ -84,7 +79,7 @@ export function CoinsCard(props: CoinsCardProps) {
             dispatch(selectedCoinsSliceActions.toggleCoin(props.coin.id));
         } else {
             if (selectedCoinIds.length >= 5) {
-                setShowModel(true);
+                setShowModal(true);
             } else {
                 dispatch(selectedCoinsSliceActions.toggleCoin(props.coin.id));
             }
@@ -107,7 +102,7 @@ export function CoinsCard(props: CoinsCardProps) {
                         className="CoinsCard-switch-label"
                         onClick={(e) => {
                             e.stopPropagation();
-                            handleToggleSelect(e as any);
+                            handleToggleSelect(e as React.MouseEvent<HTMLDivElement>);
                         }}
                     >
 
@@ -130,27 +125,27 @@ export function CoinsCard(props: CoinsCardProps) {
                         <div className="price-item">
                             <span className="price-label">USD</span>
                             <span className="price-value">
-                                ${formatPrice(prices.usd)}
+                                ${PriceFormatter.formatPrice(prices.usd)}
                             </span>
                         </div>
                         <div className="price-item">
                             <span className="price-label">EUR</span>
                             <span className="price-value">
-                                €{formatPrice(prices.eur)}
+                                €{PriceFormatter.formatPrice(prices.eur)}
                             </span>
                         </div>
                         <div className="price-item">
                             <span className="price-label">ILS</span>
                             <span className="price-value">
-                                ₪{formatPrice(prices.ils)}
+                                ₪{PriceFormatter.formatPrice(prices.ils)}
                             </span>
                         </div>
                     </div>
                 )}
             </div>
-            {showModel && (
+            {showModal && (
                 <RemoveCoinModel
-                    onClose={() => setShowModel(false)}
+                    onClose={() => setShowModal(false)}
                     onCoinRemoved={handleCoinRemovedFromModel}
                 />
             )}

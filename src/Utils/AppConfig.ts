@@ -17,6 +17,9 @@ class AppConfig {
 
     public readonly OpenAIChatCompletionsUrl =
     "https://api.openai.com/v1/chat/completions";
+    
+
+    public readonly OpenAIApiKey = import.meta.env.VITE_OPENAI_API_KEY;
 }
 
 export const appConfig = new AppConfig();

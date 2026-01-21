@@ -1,3 +1,293 @@
 .Recommendations {
-	
+	padding: 20px;
+	min-height: 100vh;
+	background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.Recommendations-header {
+	text-align: center;
+	margin-bottom: 40px;
+	padding: 20px;
+}
+
+.Recommendations-header h1 {
+	font-size: 2.5rem;
+	color: #1a1a1a;
+	margin: 0 0 10px 0;
+	font-weight: 700;
+}
+
+.Recommendations-subtitle {
+	font-size: 1.1rem;
+	color: #666;
+	margin: 10px 0;
+}
+
+.Recommendations-loading {
+	margin-top: 20px;
+	padding: 15px;
+	background: rgba(255, 255, 255, 0.9);
+	border-radius: 8px;
+	display: inline-block;
+}
+
+.Recommendations-loading p {
+	margin: 0;
+	color: #667eea;
+	font-weight: 600;
+}
+
+.Recommendations-empty {
+	text-align: center;
+	padding: 60px 20px;
+	background: white;
+	border-radius: 12px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	max-width: 500px;
+	margin: 100px auto;
+}
+
+.Recommendations-empty h2 {
+	color: #1a1a1a;
+	margin-bottom: 15px;
+}
+
+.Recommendations-empty p {
+	color: #666;
+	font-size: 1.1rem;
+}
+
+.Recommendations-content {
+	max-width: 1400px;
+	margin: 0 auto;
+}
+
+.Recommendations-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+	gap: 25px;
+	margin-top: 20px;
+}
+
+.Recommendations-card {
+	background: white;
+	border-radius: 16px;
+	padding: 25px;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+	transition: all 0.3s ease;
+	border: 3px solid transparent;
+	position: relative;
+	overflow: hidden;
+}
+
+.Recommendations-card::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 4px;
+	background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+	opacity: 0;
+	transition: opacity 0.3s ease;
+}
+
+.Recommendations-card:hover {
+	transform: translateY(-5px);
+	box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.Recommendations-card:hover::before {
+	opacity: 1;
+}
+
+.Recommendations-card.buy {
+	border-color: #10b981;
+}
+
+.Recommendations-card.buy::before {
+	background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+	opacity: 1;
+}
+
+.Recommendations-card.dont-buy {
+	border-color: #ef4444;
+}
+
+.Recommendations-card.dont-buy::before {
+	background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
+	opacity: 1;
+}
+
+.Recommendations-card.loading {
+	opacity: 0.8;
+}
+
+.Recommendations-card-header {
+	display: flex;
+	align-items: center;
+	gap: 15px;
+	margin-bottom: 20px;
+}
+
+.Recommendations-card-header img {
+	width: 56px;
+	height: 56px;
+	border-radius: 50%;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.Recommendations-card-title h3 {
+	font-size: 1.3rem;
+	color: #1a1a1a;
+	margin: 0 0 5px 0;
+	font-weight: 700;
+}
+
+.Recommendations-card-symbol {
+	font-size: 0.9rem;
+	color: #666;
+	text-transform: uppercase;
+	font-weight: 600;
+	margin: 0;
+	letter-spacing: 1px;
+}
+
+.Recommendations-price {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 12px 0;
+	border-bottom: 2px solid #e5e7eb;
+	margin-bottom: 20px;
+}
+
+.Recommendations-price-label {
+	font-size: 0.95rem;
+	color: #666;
+	font-weight: 500;
+}
+
+.Recommendations-price-value {
+	font-size: 1.2rem;
+	color: #1a1a1a;
+	font-weight: 700;
+}
+
+.Recommendations-badge {
+	display: inline-block;
+	padding: 8px 16px;
+	border-radius: 20px;
+	font-weight: 700;
+	font-size: 0.9rem;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	margin-bottom: 15px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.Recommendations-badge.buy {
+	background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+	color: white;
+}
+
+.Recommendations-badge.dont-buy {
+	background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+	color: white;
+}
+
+.Recommendations-recommendation {
+	margin: 20px 0;
+	min-height: 60px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+.Recommendations-recommendation.loading p {
+	color: #667eea;
+	font-weight: 600;
+	margin-top: 10px;
+}
+
+.Recommendations-spinner {
+	width: 40px;
+	height: 40px;
+	border: 4px solid #e5e7eb;
+	border-top-color: #667eea;
+	border-radius: 50%;
+	animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+.Recommendations-reason {
+	background: #f9fafb;
+	border-radius: 8px;
+	padding: 15px;
+	margin-top: 10px;
+	border-left: 4px solid #667eea;
+}
+
+.Recommendations-reason p {
+	margin: 0;
+	color: #374151;
+	line-height: 1.6;
+	font-size: 0.95rem;
+}
+
+.Recommendations-card.buy .Recommendations-reason {
+	border-left-color: #10b981;
+}
+
+.Recommendations-card.dont-buy .Recommendations-reason {
+	border-left-color: #ef4444;
+}
+
+.Recommendations-stats {
+	margin-top: 20px;
+	padding-top: 20px;
+	border-top: 2px solid #e5e7eb;
+}
+
+.Recommendations-stat {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 8px 0;
+	font-size: 0.9rem;
+}
+
+.Recommendations-stat span:first-child {
+	color: #666;
+	font-weight: 500;
+}
+
+.Recommendations-stat span:last-child {
+	color: #1a1a1a;
+	font-weight: 600;
+}
+
+@media (max-width: 768px) {
+	.Recommendations {
+		padding: 15px;
+	}
+
+	.Recommendations-header h1 {
+		font-size: 2rem;
+	}
+
+	.Recommendations-grid {
+		grid-template-columns: 1fr;
+		gap: 20px;
+	}
+
+	.Recommendations-card {
+		padding: 20px;
+	}
 }
