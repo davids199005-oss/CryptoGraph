@@ -91,6 +91,34 @@ class CoinsService {
         }
     }
 
+	public async getMultipleCoinsPricesBySymbols(coins: { id: string; symbol: string }[]): Promise<Map<string, number>> {
+        try {
+            if (coins.length === 0) {
+                return new Map();
+            }
+
+            // Get symbols for CryptoCompare API
+            const symbols = coins.map(coin => coin.symbol.toUpperCase()).join(",");
+            const url = appConfig.CryptoComparePriceMultiUrl.replace("{symbols}", symbols);
+            const response = await axios.get<Record<string, { USD: number }>>(url);
+
+            // Map coin IDs to prices (using coin.id as key to match with selected coins)
+            const priceMap = new Map<string, number>();
+            coins.forEach(coin => {
+                const symbol = coin.symbol.toUpperCase();
+                const priceData = response.data[symbol];
+                if (priceData && priceData.USD !== undefined) {
+                    priceMap.set(coin.id, priceData.USD);
+                }
+            });
+
+            return priceMap;
+        } catch (error) {
+            console.error("Error fetching multiple coin prices from CryptoCompare:", error);
+            return new Map();
+        }
+    }
+
 }
 
 export const coinsService = new CoinsService();

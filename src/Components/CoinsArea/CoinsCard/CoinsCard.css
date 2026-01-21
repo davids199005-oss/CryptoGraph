@@ -107,6 +107,7 @@
 	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 	transition: left 0.3s ease;
 	z-index: 0;
+	pointer-events: none;
 }
 
 .price-toggle-btn.active::before {
@@ -114,7 +115,7 @@
 }
 
 .price-toggle-btn.active {
-	color: white;
+	color: white !important;
 	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
@@ -122,6 +123,16 @@
 .price-toggle-btn {
 	position: relative;
 	z-index: 1;
+}
+
+.price-toggle-btn * {
+	position: relative;
+	z-index: 1;
+}
+
+.price-toggle-btn,
+.price-toggle-btn * {
+	color: inherit;
 }
 
 .price-toggle-btn:disabled {

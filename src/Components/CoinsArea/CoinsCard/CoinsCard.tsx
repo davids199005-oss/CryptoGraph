@@ -122,7 +122,7 @@ export function CoinsCard(props: CoinsCardProps) {
                     onClick={handleShowPrices}
                     disabled={loading}
                 >
-                    {loading ? "Loading..." : showPrices ? "Hide Prices" : "Show Price"}
+                    <span>{loading ? "Loading..." : showPrices ? "Hide Prices" : "Show Price"}</span>
                 </button>
 
                 {showPrices && prices && (

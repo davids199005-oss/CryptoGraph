@@ -32,12 +32,12 @@ type CoinReport = {
     priceChangePercent: number;
 };
 
-const REFRESH_INTERVAL_MS = 15000; // 15 seconds
+const REFRESH_INTERVAL_MS = 1 * 60 * 1000; // 1 minute
 
 export function Reports() {
     const allCoins = useSelector((state: AppState) => state.coins);
     const selectedCoinIds = useSelector((state: AppState) => state.selectedCoins);
-    
+
     const [priceHistory, setPriceHistory] = useState<PriceDataPoint[]>([]);
     const [coinReports, setCoinReports] = useState<CoinReport[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
@@ -59,9 +59,14 @@ export function Reports() {
         async function fetchPrices() {
             setLoading(true);
             try {
-                // Single API request for all selected coins
-                const pricesMap = await coinsService.getMultipleCoinsPrices(selectedCoinIds);
-                
+                // Prepare coins data with id and symbol for CryptoCompare API
+                const coinsForApi = selectedCoins
+                    .filter(coin => coin.id && coin.symbol)
+                    .map(coin => ({ id: coin.id!, symbol: coin.symbol! }));
+
+                // Single API request to CryptoCompare for all selected coins
+                const pricesMap = await coinsService.getMultipleCoinsPricesBySymbols(coinsForApi);
+
                 if (isCancelled) return;
 
                 const now = new Date();
@@ -72,7 +77,7 @@ export function Reports() {
                 let previousDataPoint: PriceDataPoint | undefined;
                 setPriceHistory(prev => {
                     previousDataPoint = prev[prev.length - 1];
-                    
+
                     const newDataPoint: PriceDataPoint = { time: timeString, timestamp };
                     selectedCoins.forEach(coin => {
                         if (coin.id) {
@@ -80,7 +85,7 @@ export function Reports() {
                             if (currentPrice !== undefined) {
                                 const previousPrice = previousDataPoint?.[coin.id];
                                 let candle: OhlcCandle;
-                                
+
                                 if (previousPrice && typeof previousPrice === "object" && "close" in previousPrice) {
                                     // Use previous close as open
                                     const open = previousPrice.close;
@@ -104,12 +109,12 @@ export function Reports() {
                                         close: currentPrice
                                     };
                                 }
-                                
+
                                 newDataPoint[coin.id] = candle;
                             }
                         }
                     });
-                    
+
                     const updated = [...prev, newDataPoint];
                     // Keep only last 30 data points
                     return updated.slice(-30);
@@ -122,7 +127,7 @@ export function Reports() {
                         const currentPrice = pricesMap.get(coin.id!) || 0;
                         const previousData = previousDataPoint?.[coin.id!];
                         let previousPrice: number;
-                        
+
                         if (previousData && typeof previousData === "object" && "close" in previousData) {
                             previousPrice = previousData.close;
                         } else if (typeof previousData === "number") {
@@ -130,7 +135,7 @@ export function Reports() {
                         } else {
                             previousPrice = currentPrice;
                         }
-                        
+
                         const priceChange = currentPrice - previousPrice;
                         const priceChangePercent = previousPrice > 0 ? (priceChange / previousPrice) * 100 : 0;
 
@@ -201,14 +206,14 @@ export function Reports() {
                 if (coin.id && coin.symbol) {
                     const coinData = point[coin.id];
                     let price: number | undefined;
-                    
+
                     // Extract price from OHLC candle or use direct price
                     if (coinData && typeof coinData === "object" && "close" in coinData) {
                         price = coinData.close;
                     } else if (typeof coinData === "number") {
                         price = coinData;
                     }
-                    
+
                     if (price !== undefined) {
                         // Use symbol as key for the chart
                         dataPoint[coin.symbol.toUpperCase()] = price;
@@ -257,19 +262,19 @@ export function Reports() {
                             <ResponsiveContainer width="100%" height={500}>
                                 <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                                     <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                                    <XAxis 
-                                        dataKey="time" 
+                                    <XAxis
+                                        dataKey="time"
                                         stroke="#1a1a1a"
                                         style={{ fontSize: '12px' }}
                                     />
-                                    <YAxis 
+                                    <YAxis
                                         stroke="#1a1a1a"
                                         style={{ fontSize: '12px' }}
                                         domain={['auto', 'auto']}
                                     />
-                                    <Tooltip 
-                                        contentStyle={{ 
-                                            backgroundColor: '#fff', 
+                                    <Tooltip
+                                        contentStyle={{
+                                            backgroundColor: '#fff',
                                             border: '1px solid #e2e8f0',
                                             borderRadius: '4px'
                                         }}
@@ -320,7 +325,7 @@ export function Reports() {
                                         <p className="Reports-coin-symbol">{report.coin.symbol?.toUpperCase()}</p>
                                     </div>
                                 </div>
-                                
+
                                 <div className="Reports-coin-price">
                                     <span className="Reports-price-label">Current Price:</span>
                                     <span className="Reports-price-value">{formatPrice(report.currentPrice)}</span>
@@ -328,7 +333,7 @@ export function Reports() {
 
                                 <div className="Reports-coin-change">
                                     <span className="Reports-change-label">24h Change:</span>
-                                    <span 
+                                    <span
                                         className="Reports-change-value"
                                         style={{
                                             color: report.priceChange >= 0 ? "#16a34a" : "#dc2626"
