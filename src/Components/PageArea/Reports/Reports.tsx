@@ -45,7 +45,7 @@ type CoinReport = {
     priceChangePercent: number;
 };
 
-const REFRESH_INTERVAL_MS = 1 * 1000; // 1 second
+const REFRESH_INTERVAL_MS = 10 * 1000; // 10 seconds
 
 export function Reports() {
     const allCoins = useSelector((state: AppState) => state.coins);
