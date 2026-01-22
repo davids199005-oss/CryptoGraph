@@ -7,7 +7,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	
+
 }
 
 .Header-background {
@@ -16,7 +16,7 @@
 	left: 0;
 	width: 100%;
 	height: 120%;
-	background-image: url('/header.jpg');
+	background-image: url('/Images/header.jpg');
 	background-size: cover;
 	background-position: center;
 	background-repeat: no-repeat;
@@ -29,6 +29,7 @@
 	color: white;
 	text-align: center;
 	text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+	font-family: 'MainFont', sans-serif;
 }
 
 .Header-content p {
@@ -36,6 +37,5 @@
 	-webkit-text-stroke: 2px black;
 	font-size: 5rem;
 	font-weight: 600;
-	font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+	font-family: 'MainFont', sans-serif;
 }
-

@@ -41,7 +41,7 @@ export function About() {
 						<div className="About-personal-content">
 							<div className="About-photo-container">
 								<img
-									src="/my pitcure.png"
+									src="/Images/my pitcure.png"
 									alt="David Veryutin"
 									className="About-photo"
 								/>
