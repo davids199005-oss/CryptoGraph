@@ -2,3 +2,7 @@ node_modules
 .env
 .gitignore
 dist
+firebase.json
+.firebaserc
+.gitignore
+.firebase/hosting.ZGlzdA.cache
