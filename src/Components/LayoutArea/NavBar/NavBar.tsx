@@ -30,13 +30,24 @@ export function NavBar() {
 		},
 		backgroundColor: 'rgba(6, 8, 22, 0.95)',
 		...(isActive && {
-			backgroundColor: 'rgba(10, 12, 32, 0.98)',
-			boxShadow: '0 2px 8px rgba(0, 0, 0, 0.35), inset 0 0 20px rgba(102, 126, 234, 0.18)',
+			backgroundColor: 'rgba(102, 126, 234, 0.35)',
+			boxShadow: '0 0 15px rgba(102, 126, 234, 1), 0 0 30px rgba(102, 126, 234, 0.9), 0 0 50px rgba(102, 126, 234, 0.7), 0 0 70px rgba(102, 126, 234, 0.5), 0 4px 15px rgba(102, 126, 234, 0.6), inset 0 0 35px rgba(102, 126, 234, 0.4)',
+			borderBottom: '3px solid #667eea',
+			transform: 'translateY(-1px)',
+			textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6), 0 0 25px rgba(102, 126, 234, 1), 0 0 40px rgba(102, 126, 234, 0.8)',
+			'& .MuiButton-startIcon': {
+				color: '#ffffff',
+				filter: 'drop-shadow(0 0 10px rgba(102, 126, 234, 1)) drop-shadow(0 0 20px rgba(102, 126, 234, 0.9)) drop-shadow(0 0 30px rgba(102, 126, 234, 0.7))',
+			},
 		}),
 		'&:hover': {
 			backgroundColor: 'rgba(16, 20, 48, 0.98)',
 			transform: 'translateY(-2px)',
 			textShadow: '2px 2px 6px rgba(0, 0, 0, 0.7), 0 0 20px rgba(102, 126, 234, 0.5)',
+		},
+		'&:active': {
+			transform: 'translateY(0)',
+			boxShadow: '0 2px 6px rgba(102, 126, 234, 0.3), inset 0 0 15px rgba(102, 126, 234, 0.2)',
 		},
 		transition: 'all 0.3s ease',
 	});
