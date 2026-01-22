@@ -1,6 +1,5 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { Home } from "../../PageArea/Home/Home";
-import "./Routing.css";
 import { About } from "../../PageArea/About/About";
 import { Reports } from "../../PageArea/Reports/Reports";
 import { Recommendations } from "../../PageArea/Recommendations/Recommendations";
@@ -9,8 +8,7 @@ import { CoinsDetails } from "../../CoinsArea/CoinsDetails/CoinsDetails";
 
 export function Routing() {
     return (
-        <div className="Routing">
-
+        <div>
             <Routes>
                 <Route path="/" element={<Navigate to="/Home" />} />
 

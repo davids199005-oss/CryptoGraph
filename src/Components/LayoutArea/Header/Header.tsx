@@ -50,15 +50,26 @@ export function Header() {
                     left: 0,
                     width: '100%',
                     height: '120%',
-                    backgroundImage: 'url(/Images/header.jpg)',
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    backgroundRepeat: 'no-repeat',
                     transform: `translateY(${parallaxOffset}px)`,
                     willChange: 'transform',
                     transition: 'transform 0.1s ease-out',
+                    '& video': {
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                    },
                 }}
-            />
+            >
+                <video
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    style={{ display: 'block' }}
+                >
+                    <source src="/Images/animatedHeader.mp4" type="video/mp4" />
+                </video>
+            </Box>
             <Box
                 sx={{
                     position: 'relative',

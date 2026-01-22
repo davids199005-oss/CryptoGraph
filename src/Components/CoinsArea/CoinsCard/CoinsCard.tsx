@@ -124,32 +124,60 @@ export function CoinsCard(props: CoinsCardProps) {
 						top: 12,
 						right: 12,
 						zIndex: 10,
-						backgroundColor: alpha('#000', 0.5),
-						borderRadius: 2,
-						padding: 0.5,
-					}}
-					onClick={(e) => e.stopPropagation()}
-				>
-					<FormControlLabel
-						control={
-							<Switch
-								checked={isSelected}
-								onChange={handleToggleSelect}
-								size="small"
-								sx={{
-									'& .MuiSwitch-switchBase.Mui-checked': {
-										color: 'primary.main',
+				}}
+				onClick={(e) => e.stopPropagation()}
+			>
+				<FormControlLabel
+					control={
+						<Switch
+							checked={isSelected}
+							onChange={handleToggleSelect}
+							sx={{
+								width: 52,
+								height: 28,
+								padding: 0,
+								'& .MuiSwitch-switchBase': {
+									padding: 0,
+									margin: '2px',
+									transitionDuration: '300ms',
+									'&.Mui-checked': {
+										transform: 'translateX(24px)',
+										color: '#fff',
+										'& + .MuiSwitch-track': {
+											backgroundColor: '#667eea',
+											opacity: 1,
+											border: 0,
+											boxShadow: '0 0 12px rgba(102, 126, 234, 0.6), inset 0 0 8px rgba(102, 126, 234, 0.4)',
+										},
+										'& .MuiSwitch-thumb': {
+											boxShadow: '0 2px 8px rgba(102, 126, 234, 0.8)',
+										},
 									},
-									'& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-										backgroundColor: 'primary.main',
+								},
+								'&:hover': {
+									'& .MuiSwitch-thumb': {
+										transform: 'scale(1.15)',
 									},
-								}}
-							/>
-						}
-						label=""
+								},
+								'& .MuiSwitch-thumb': {
+									boxSizing: 'border-box',
+									width: 24,
+									height: 24,
+									transition: 'all 0.3s ease',
+									boxShadow: '0 2px 4px rgba(0, 0, 0, 0.4)',
+								},
+								'& .MuiSwitch-track': {
+									borderRadius: 28 / 2,
+									backgroundColor: 'rgba(255, 255, 255, 0.2)',
+									opacity: 1,
+									transition: 'all 0.3s ease',
+									border: '1px solid rgba(255, 255, 255, 0.3)',							},
+						}}
 					/>
-				</Box>
-
+				}
+				label=""
+			/>
+		</Box>
 				<CardContent
 					sx={{
 						flexGrow: 1,
@@ -247,7 +275,10 @@ export function CoinsCard(props: CoinsCardProps) {
 							sx={{
 								mb: showPrices ? 2 : 0,
 								borderColor: 'primary.main',
-								color: 'primary.light',
+								color: '#ffffff',
+								'& .MuiButton-startIcon svg': {
+									color: '#ffffff',
+								},
 								'&:hover': {
 									borderColor: 'primary.light',
 									backgroundColor: alpha('#667eea', 0.1),

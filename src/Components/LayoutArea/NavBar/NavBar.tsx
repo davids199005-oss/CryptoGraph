@@ -1,30 +1,40 @@
+import { ChangeEvent } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { AppBar, Toolbar, Button, Box, Container } from "@mui/material";
-import { TrendingUp, Assessment, Recommend, Info } from "@mui/icons-material";
+import { useDispatch, useSelector } from "react-redux";
+import { AppBar, Toolbar, Button, Container, TextField, InputAdornment, Box } from "@mui/material";
+import { TrendingUp, Assessment, Recommend, Info, Search } from "@mui/icons-material";
+import { AppState } from "../../../Redux/AppState";
+import { searchSliceActions } from "../../../Redux/SearchSlice";
 
 export function NavBar() {
 	const location = useLocation();
+	const dispatch = useDispatch();
+	const searchQuery = useSelector((state: AppState) => state.searchQuery);
+
+	const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
+		dispatch(searchSliceActions.setSearchQuery(event.target.value));
+	};
 
 	const navButtonSx = (isActive: boolean) => ({
-		color: '#ffeb3b',
+		color: '#ffffff',
 		fontWeight: 600,
 		textTransform: 'none' as const,
 		fontSize: '1rem',
 		px: 2,
 		py: 1,
 		borderRadius: 2,
-		WebkitTextStroke: '1px #000',
-		textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6), 0 0 12px rgba(102, 126, 234, 0.4)',
+		textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6), 0 0 12px rgba(106, 102, 234, 0.44)',
 		'& .MuiButton-startIcon': {
-			color: '#ffeb3b',
+			color: '#ffffff',
 			filter: 'drop-shadow(1px 1px 2px rgba(0,0,0,0.6))',
 		},
+		backgroundColor: 'rgba(6, 8, 22, 0.95)',
 		...(isActive && {
-			backgroundColor: 'rgba(255, 255, 255, 0.15)',
-			boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3), inset 0 0 20px rgba(102, 126, 234, 0.2)',
+			backgroundColor: 'rgba(10, 12, 32, 0.98)',
+			boxShadow: '0 2px 8px rgba(0, 0, 0, 0.35), inset 0 0 20px rgba(102, 126, 234, 0.18)',
 		}),
 		'&:hover': {
-			backgroundColor: 'rgba(255, 255, 255, 0.12)',
+			backgroundColor: 'rgba(16, 20, 48, 0.98)',
 			transform: 'translateY(-2px)',
 			textShadow: '2px 2px 6px rgba(0, 0, 0, 0.7), 0 0 20px rgba(102, 126, 234, 0.5)',
 		},
@@ -43,43 +53,81 @@ export function NavBar() {
 			}}
 		>
 			<Container maxWidth="xl">
-				<Toolbar sx={{ justifyContent: 'center', gap: 1 }}>
-					<Button
-						component={NavLink}
-						to="/Home"
-						color="inherit"
-						startIcon={<TrendingUp />}
-						sx={navButtonSx(location.pathname === '/Home')}
-					>
-						Home
-					</Button>
-					<Button
-						component={NavLink}
-						to="/Reports"
-						color="inherit"
-						startIcon={<Assessment />}
-						sx={navButtonSx(location.pathname === '/Reports')}
-					>
-						Reports
-					</Button>
-					<Button
-						component={NavLink}
-						to="/Recommendations"
-						color="inherit"
-						startIcon={<Recommend />}
-						sx={navButtonSx(location.pathname === '/Recommendations')}
-					>
-						Recommendations
-					</Button>
-					<Button
-						component={NavLink}
-						to="/About"
-						color="inherit"
-						startIcon={<Info />}
-						sx={navButtonSx(location.pathname === '/About')}
-					>
-						About
-					</Button>
+				<Toolbar sx={{ gap: 1.5, flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
+					<Box sx={{ display: 'flex', gap: 3.5, flexWrap: 'wrap', flex: 1, maxWidth: '70%' }}>
+						<Button
+							component={NavLink}
+							to="/Home"
+							color="inherit"
+							startIcon={<TrendingUp />}
+							sx={navButtonSx(location.pathname === '/Home')}
+						>
+							Home
+						</Button>
+						<Button
+							component={NavLink}
+							to="/Reports"
+							color="inherit"
+							startIcon={<Assessment />}
+							sx={navButtonSx(location.pathname === '/Reports')}
+						>
+							Reports
+						</Button>
+						<Button
+							component={NavLink}
+							to="/Recommendations"
+							color="inherit"
+							startIcon={<Recommend />}
+							sx={navButtonSx(location.pathname === '/Recommendations')}
+						>
+							Recommendations
+						</Button>
+						<Button
+							component={NavLink}
+							to="/About"
+							color="inherit"
+							startIcon={<Info />}
+							sx={navButtonSx(location.pathname === '/About')}
+						>
+							About
+						</Button>
+					</Box>
+					<TextField
+						value={searchQuery}
+						onChange={handleSearchChange}
+						placeholder="Search Coin"
+						variant="outlined"
+						size="small"
+						slotProps={{
+							input: {
+								startAdornment: (
+									<InputAdornment position="start">
+										<Search sx={{ color: '#e0e7ff' }} />
+									</InputAdornment>
+								),
+							},
+							htmlInput: { 'aria-label': 'Search by coin name or ID' },
+						}}
+						sx={{
+							minWidth: { xs: '100%', sm: 200 },
+							maxWidth: 240,
+							ml: { xs: 0, sm: 'auto' },
+							backgroundColor: 'rgba(255, 255, 255, 0.06)',
+							borderRadius: 2,
+							'& .MuiOutlinedInput-notchedOutline': {
+								borderColor: 'rgba(255, 255, 255, 0.2)',
+							},
+							'&:hover .MuiOutlinedInput-notchedOutline': {
+								borderColor: 'rgba(255, 255, 255, 0.35)',
+							},
+							'& .MuiOutlinedInput-input': {
+								color: '#ffffff',
+							},
+							'& .MuiInputBase-input::placeholder': {
+								color: 'rgba(255, 255, 255, 0.8)',
+							},
+						}}
+					/>
 				</Toolbar>
 			</Container>
 		</AppBar>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Grid, Typography, Box, Skeleton, CircularProgress } from "@mui/material";
+import { Grid, Typography, Box, Skeleton } from "@mui/material";
 import { CoinsModel } from "../../../Models/CoinsModel";
 import { coinsService } from "../../../Services/CoinsService";
 import { CoinsCard } from "../CoinsCard/CoinsCard";
@@ -10,6 +10,7 @@ import { coinsSlice } from "../../../Redux/CoinsSlice";
 export function CoinsList() {
 	const dispatch = useDispatch();
 	const coinsFromStore = useSelector((state: AppState) => state.coins);
+	const searchQuery = useSelector((state: AppState) => state.searchQuery);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 
 	useEffect(() => {
@@ -30,6 +31,15 @@ export function CoinsList() {
 				setIsLoading(false);
 			});
 	}, [dispatch, coinsFromStore.length]);
+
+	const normalizedQuery = searchQuery.trim().toLowerCase();
+	const filteredCoins = normalizedQuery
+		? coinsFromStore.filter(coin => {
+			const name = coin.name?.toLowerCase() ?? "";
+			const idValue = (coin.id ?? "").toString().toLowerCase();
+			return name.includes(normalizedQuery) || idValue.includes(normalizedQuery);
+		})
+		: coinsFromStore;
 
 	if (isLoading && coinsFromStore.length === 0) {
 		return (
@@ -62,9 +72,19 @@ export function CoinsList() {
 		);
 	}
 
+	if (filteredCoins.length === 0) {
+		return (
+			<Box sx={{ textAlign: 'center', py: 8 }}>
+				<Typography variant="h6" color="text.secondary">
+					No matches for "{searchQuery}"
+				</Typography>
+			</Box>
+		);
+	}
+
 	return (
 		<Grid container spacing={3}>
-			{coinsFromStore.map(coin => (
+			{filteredCoins.map(coin => (
 				<Grid item xs={12} sm={6} md={4} lg={3} key={coin.id}>
 					<CoinsCard coin={coin} />
 				</Grid>
