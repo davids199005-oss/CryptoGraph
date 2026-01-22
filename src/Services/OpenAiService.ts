@@ -143,7 +143,9 @@ Your response must be in the following JSON format:
 	/**
 	 * Normalize OpenAI message content to a plain string regardless of content part type
 	 */
-	private normalizeMessageContent(content: OpenAI.Chat.Completions.ChatCompletionMessage["content"]): string {
+	private normalizeMessageContent(
+		content: string | Array<{ text?: string } | string> | null | undefined
+	): string {
 		if (!content) {
 			return "";
 		}
@@ -152,8 +154,8 @@ Your response must be in the following JSON format:
 			return content.trim();
 		}
 
-		if (Array.isArray(content)) {
-			return content
+		if (Array.isArray(content) && content.length > 0) {
+			return (content as Array<{ text?: string } | string>)
 				.map(part => {
 					if (typeof part === "string") {
 						return part;
