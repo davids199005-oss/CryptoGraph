@@ -64,20 +64,27 @@ export function CoinsCard(props: CoinsCardProps) {
 	}
 
 	async function handleShowPrices(e: React.MouseEvent<HTMLButtonElement>) {
+		e.preventDefault();
 		e.stopPropagation();
 
 		if (showPrices) {
 			setShowPrices(false);
+			setPrices(null);
 			return;
 		}
 
-		setLoading(true);
-		const coinPrices = await coinsService.getCoinPrices(props.coin.id || "");
-		setLoading(false);
-
-		if (coinPrices) {
-			setPrices(coinPrices);
-			setShowPrices(true);
+		try {
+			setLoading(true);
+			const coinPrices = await coinsService.getCoinPrices(props.coin.id || "");
+			
+			if (coinPrices) {
+				setPrices(coinPrices);
+				setShowPrices(true);
+			}
+		} catch (error) {
+			console.error("Error loading prices:", error);
+		} finally {
+			setLoading(false);
 		}
 	}
 
