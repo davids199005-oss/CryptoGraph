@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Legend, ResponsiveContainer } from "recharts";
 import {
     Container,
     Typography,
@@ -11,7 +11,6 @@ import {
     Chip,
     Stack,
     alpha,
-    Paper,
     CircularProgress,
 } from "@mui/material";
 import { TrendingUp, TrendingDown } from "@mui/icons-material";
@@ -300,25 +299,11 @@ export function Reports() {
                                             dataKey="time"
                                             stroke="#ffffff"
                                             style={{ fontSize: '12px' }}
-                                            label={{ value: 'Time', position: 'insideBottom', offset: -5, style: { textAnchor: 'middle', fill: '#b8bcc8', fontSize: '14px', fontWeight: '600' } }}
                                         />
                                         <YAxis
                                             stroke="#ffffff"
                                             style={{ fontSize: '12px' }}
                                             domain={['auto', 'auto']}
-                                            label={{ value: 'Price (USD)', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#b8bcc8', fontSize: '14px', fontWeight: '600' } }}
-                                        />
-                                        <Tooltip
-                                            contentStyle={{
-                                                backgroundColor: '#121633',
-                                                border: '1px solid rgba(102, 126, 234, 0.3)',
-                                                borderRadius: '12px',
-                                                color: '#ffffff',
-                                            }}
-                                            formatter={(value: number | undefined) => {
-                                                if (value === undefined) return '';
-                                                return PriceFormatter.formatCurrency(value);
-                                            }}
                                         />
                                         <Legend />
                                         {selectedCoins.map((coin, index) => {

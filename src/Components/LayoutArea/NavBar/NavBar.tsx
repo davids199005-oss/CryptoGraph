@@ -1,4 +1,4 @@
-import { ChangeEvent } from "react";
+import { ChangeEvent, useCallback } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { AppBar, Toolbar, Button, Container, TextField, InputAdornment, Box } from "@mui/material";
@@ -6,16 +6,25 @@ import { TrendingUp, Assessment, Recommend, Info, Search } from "@mui/icons-mate
 import { AppState } from "../../../Redux/AppState";
 import { searchSliceActions } from "../../../Redux/SearchSlice";
 
+/**
+ * Navigation Bar Component
+ * Displays navigation buttons and global search field
+ * - Sticky positioning for persistent visibility
+ * - Active route highlighting
+ * - Real-time coin search functionality
+ */
 export function NavBar() {
 	const location = useLocation();
 	const dispatch = useDispatch();
 	const searchQuery = useSelector((state: AppState) => state.searchQuery);
 
-	const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
+	// Memoize search handler to prevent unnecessary re-renders
+	const handleSearchChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
 		dispatch(searchSliceActions.setSearchQuery(event.target.value));
-	};
+	}, [dispatch]);
 
-	const navButtonSx = (isActive: boolean) => ({
+	// Memoize button style calculation
+	const navButtonSx = useCallback((isActive: boolean) => ({
 		color: '#ffffff',
 		fontWeight: 600,
 		textTransform: 'none' as const,
@@ -50,7 +59,7 @@ export function NavBar() {
 			boxShadow: '0 2px 6px rgba(102, 126, 234, 0.3), inset 0 0 15px rgba(102, 126, 234, 0.2)',
 		},
 		transition: 'all 0.3s ease',
-	});
+	}), []);
 
 	return (
 		<AppBar
@@ -65,6 +74,7 @@ export function NavBar() {
 		>
 			<Container maxWidth="xl">
 				<Toolbar sx={{ gap: 1.5, flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
+					{/* Navigation buttons section */}
 					<Box sx={{ display: 'flex', gap: 3.5, flexWrap: 'wrap', flex: 1, maxWidth: '70%' }}>
 						<Button
 							component={NavLink}
@@ -103,6 +113,8 @@ export function NavBar() {
 							About
 						</Button>
 					</Box>
+
+					{/* Search field */}
 					<TextField
 						value={searchQuery}
 						onChange={handleSearchChange}

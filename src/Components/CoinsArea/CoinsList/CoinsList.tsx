@@ -7,6 +7,14 @@ import { CoinsCard } from "../CoinsCard/CoinsCard";
 import { AppState } from "../../../Redux/AppState";
 import { coinsSlice } from "../../../Redux/CoinsSlice";
 
+/**
+ * CoinsList Component
+ * Displays a grid of cryptocurrency coins with filtering and loading states
+ * - Fetches coins from API on mount (cached in Redux store to avoid re-fetching)
+ * - Filters coins based on global search query
+ * - Shows loading skeleton while fetching
+ * - Shows error/empty states appropriately
+ */
 export function CoinsList() {
 	const dispatch = useDispatch();
 	const coinsFromStore = useSelector((state: AppState) => state.coins);
@@ -14,7 +22,7 @@ export function CoinsList() {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 
 	useEffect(() => {
-		// If coins are already in store, don't fetch again
+		// If coins are already in store, don't fetch again (caching optimization)
 		if (coinsFromStore.length > 0) {
 			return;
 		}
@@ -32,6 +40,7 @@ export function CoinsList() {
 			});
 	}, [dispatch, coinsFromStore.length]);
 
+	// Normalize search query and filter coins by name or ID
 	const normalizedQuery = searchQuery.trim().toLowerCase();
 	const filteredCoins = normalizedQuery
 		? coinsFromStore.filter(coin => {
@@ -41,6 +50,7 @@ export function CoinsList() {
 		})
 		: coinsFromStore;
 
+	// Loading skeleton state
 	if (isLoading && coinsFromStore.length === 0) {
 		return (
 			<Grid container spacing={3}>
@@ -62,6 +72,7 @@ export function CoinsList() {
 		);
 	}
 
+	// Empty state when no coins loaded
 	if (coinsFromStore.length === 0 && !isLoading) {
 		return (
 			<Box sx={{ textAlign: 'center', py: 8 }}>
@@ -72,6 +83,7 @@ export function CoinsList() {
 		);
 	}
 
+	// No results for search query
 	if (filteredCoins.length === 0) {
 		return (
 			<Box sx={{ textAlign: 'center', py: 8 }}>
@@ -82,6 +94,7 @@ export function CoinsList() {
 		);
 	}
 
+	// Render filtered coins grid
 	return (
 		<Grid container spacing={3}>
 			{filteredCoins.map(coin => (

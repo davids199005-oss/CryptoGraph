@@ -2,19 +2,32 @@ import { appConfig } from "../Utils/AppConfig";
 import OpenAI from "openai";
 import { CoinRecommendationData } from "../Models/ApiTypes";
 
+/**
+ * Response type for AI-generated cryptocurrency recommendations
+ */
 type RecommendationResponse = {
 	recommendation: "buy" | "do not buy";
 	reason: string;
 };
 
+/**
+ * Service for communicating with OpenAI's GPT API
+ * Provides AI-powered cryptocurrency analysis and recommendations
+ */
 class OpenAiService {
-
-
+    /**
+     * OpenAI client initialized with API key from environment variables
+     * dangerouslyAllowBrowser flag required for client-side usage
+     */
     private openAi = new OpenAI({
         apiKey: appConfig.OpenAIApiKey,
         dangerouslyAllowBrowser: true,
     });
 
+    /**
+     * Generic method to get chat completions from GPT model
+     * @param messages - Array of chat messages with roles and content
+     */
     public async getChatCompletions(messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[]): Promise<OpenAI.Chat.Completions.ChatCompletionMessage> {
         const response = await this.openAi.chat.completions.create({
             model: "gpt-4o-mini",
@@ -23,6 +36,11 @@ class OpenAiService {
         return response.choices[0].message;
     }
 
+	/**
+	 * Analyzes cryptocurrency data and provides a buy/sell recommendation using GPT
+	 * @param coinData - Market data for the cryptocurrency
+	 * @returns Recommendation object with decision and reasoning, or null on error
+	 */
 	public async getCoinRecommendation(coinData: CoinRecommendationData): Promise<RecommendationResponse | null> {
 		try {
 			const systemPrompt = `You are an AI assistant that analyzes cryptocurrency data and provides a clear, concise recommendation for the user.
@@ -89,7 +107,6 @@ Your response must be in the following JSON format:
 			return null;
 		}
 	}
-	
 }
 
 export const openAiService = new OpenAiService();

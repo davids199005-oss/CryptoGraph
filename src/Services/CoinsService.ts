@@ -9,10 +9,15 @@ import {
 	CoinRecommendationData,
 } from "../Models/ApiTypes";
 
+/**
+ * Service for fetching cryptocurrency data from CoinGecko and CryptoCompare APIs
+ * Provides methods for retrieving coin prices, details, and market data
+ */
 class CoinsService {
-
-
-
+	/**
+	 * Fetches the list of top cryptocurrencies with market data
+	 * @throws {Error} If the API request fails
+	 */
 	public async getCoinsList(): Promise<CoinsModel[]> {
         try {
             const response = await axios.get<CoinsModel[]>(appConfig.CoinListUrl);
@@ -23,6 +28,11 @@ class CoinsService {
         }
     }
 
+	/**
+	 * Fetches current price for a single coin in multiple currencies
+	 * @param coinId - The coin identifier
+	 * @returns Price data in USD, EUR, and ILS, or null if request fails
+	 */
 	public async getCoinPrices(coinId: string): Promise<CoinPriceData | null> {
         try {
             const url = appConfig.CoinPriceUrl.replace("{id}", coinId);
@@ -42,6 +52,10 @@ class CoinsService {
         }
     }
 
+	/**
+	 * Fetches detailed information about a coin
+	 * @param coinId - The coin identifier
+	 */
 	public async getCoinDetails(coinId: string): Promise<CoinGeckoCoinDetailsResponse | null> {
         try {
             const url = appConfig.CoinDetailsUrl.replace("{id}", coinId);
@@ -53,6 +67,10 @@ class CoinsService {
         }
     }
 
+	/**
+	 * Fetches detailed information about a coin including market data
+	 * @param coinId - The coin identifier
+	 */
 	public async getCoinDetailsWithMarketData(coinId: string): Promise<CoinGeckoCoinDetailsResponse | null> {
         try {
             const url = `${appConfig.CoinDetailsUrl.replace("{id}", coinId)}?market_data=true`;
@@ -64,6 +82,11 @@ class CoinsService {
         }
     }
 
+	/**
+	 * Fetches prices for multiple coins in a single API request (optimized batch operation)
+	 * @param coinIds - Array of coin identifiers
+	 * @returns Map of coin ID to USD price
+	 */
 	public async getMultipleCoinsPrices(coinIds: string[]): Promise<Map<string, number>> {
         try {
             if (coinIds.length === 0) {
@@ -91,6 +114,11 @@ class CoinsService {
         }
     }
 
+	/**
+	 * Fetches prices for multiple coins by their symbols from CryptoCompare API
+	 * @param coins - Array of objects containing coin id and symbol
+	 * @returns Map of coin ID to USD price
+	 */
 	public async getMultipleCoinsPricesBySymbols(coins: { id: string; symbol: string }[]): Promise<Map<string, number>> {
         try {
             if (coins.length === 0) {
@@ -119,6 +147,10 @@ class CoinsService {
         }
     }
 
+	/**
+	 * Fetches comprehensive market data for AI-powered recommendation analysis
+	 * @param coinId - The coin identifier
+	 */
 	public async getCoinDataForRecommendation(coinId: string): Promise<CoinRecommendationData | null> {
 		try {
 			const url = appConfig.CoinDetailsUrl.replace("{id}", coinId);
@@ -126,6 +158,7 @@ class CoinsService {
 
 			const marketData = response.data.market_data;
 			if (!marketData) {
+				console.warn(`No market data available for coin: ${coinId}`);
 				return null;
 			}
 
@@ -143,7 +176,6 @@ class CoinsService {
 			return null;
 		}
 	}
-
 }
 
 export const coinsService = new CoinsService();

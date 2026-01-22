@@ -12,7 +12,7 @@ import {
 	Chip,
 	alpha,
 } from "@mui/material";
-import { CheckCircle, Cancel, TrendingUp, TrendingDown } from "@mui/icons-material";
+import { CheckCircle, Cancel } from "@mui/icons-material";
 import { AppState } from "../../../Redux/AppState";
 import { CoinsModel } from "../../../Models/CoinsModel";
 import { coinsService } from "../../../Services/CoinsService";

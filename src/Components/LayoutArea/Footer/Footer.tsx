@@ -1,6 +1,10 @@
-import { Box, Container, Typography, Stack, Link } from "@mui/material";
+import { Box, Container, Typography, Stack } from "@mui/material";
 import { Copyright } from "@mui/icons-material";
 
+/**
+ * Footer Component
+ * Displays copyright and attribution information
+ */
 export function Footer() {
     return (
         <Box
@@ -23,7 +27,7 @@ export function Footer() {
                     <Stack direction="row" spacing={1} alignItems="center">
                         <Copyright sx={{ fontSize: 18, color: 'primary.main' }} />
                         <Typography variant="body2" color="text.secondary">
-                         Created By David Veryutin   {new Date().getFullYear()} CryptoGraph. All rights reserved.
+                            Created By David Veryutin   {new Date().getFullYear()} CryptoGraph. All rights reserved.
                         </Typography>
                     </Stack>
                 </Stack>

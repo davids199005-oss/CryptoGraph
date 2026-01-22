@@ -1,22 +1,30 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { Box, Typography, alpha } from "@mui/material";
 
+/**
+ * Header Component with Parallax Effect
+ * Displays animated header banner with parallax scrolling effect
+ * Uses passive scroll listener for improved performance
+ */
 export function Header() {
     const headerRef = useRef<HTMLDivElement>(null);
     const [scrollY, setScrollY] = useState(0);
 
-    useEffect(() => {
-        function handleScroll() {
-            setScrollY(window.scrollY);
-        }
+    // Memoize scroll handler to prevent re-creating function on every render
+    const handleScroll = useCallback(() => {
+        setScrollY(window.scrollY);
+    }, []);
 
+    useEffect(() => {
+        // Passive listener: doesn't block scrolling, better performance
         window.addEventListener('scroll', handleScroll, { passive: true });
 
         return () => {
             window.removeEventListener('scroll', handleScroll);
         };
-    }, []);
+    }, [handleScroll]);
 
+    // Calculate parallax offset (50% of scroll distance)
     const parallaxOffset = scrollY * 0.5;
 
     return (
@@ -43,6 +51,7 @@ export function Header() {
                 },
             }}
         >
+            {/* Video background with parallax effect */}
             <Box
                 sx={{
                     position: 'absolute',
@@ -70,6 +79,8 @@ export function Header() {
                     <source src="/Images/animatedHeader.mp4" type="video/mp4" />
                 </video>
             </Box>
+
+            {/* Header content */}
             <Box
                 sx={{
                     position: 'relative',

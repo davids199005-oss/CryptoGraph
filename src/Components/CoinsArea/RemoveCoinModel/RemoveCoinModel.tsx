@@ -11,12 +11,16 @@ import {
     ListItemText,
     Avatar,
     Typography,
-    Box,
 } from "@mui/material";
 import { Close } from "@mui/icons-material";
 import { AppState } from "../../../Redux/AppState";
 import { selectedCoinsSliceActions } from "../../../Redux/CoinsSlice";
 
+/**
+ * RemoveCoinModel Dialog Component
+ * Displayed when user tries to select more than 5 coins
+ * Allows user to remove one of their currently selected coins to make room
+ */
 type RemoveCoinModelProps = {
     onClose: () => void;
     onCoinRemoved?: () => void;
@@ -27,10 +31,15 @@ export function RemoveCoinModel(props: RemoveCoinModelProps) {
     const selectedCoinIds = useSelector((state: AppState) => state.selectedCoins);
     const allCoins = useSelector((state: AppState) => state.coins);
 
+    // Filter to show only currently selected coins
     const selectedCoins = allCoins.filter(coin =>
         coin.id && selectedCoinIds.includes(coin.id)
     );
 
+    /**
+     * Handle removal of selected coin
+     * Deselects the coin from Redux store and notifies parent component
+     */
     const handleRemoveCoin = (coinId: string) => {
         dispatch(selectedCoinsSliceActions.removeCoin(coinId));
         props.onClose();
@@ -65,13 +74,13 @@ export function RemoveCoinModel(props: RemoveCoinModelProps) {
                     {selectedCoins.map(coin => (
                         <ListItem
                             key={coin.id}
-                            button
                             onClick={() => handleRemoveCoin(coin.id || "")}
                             sx={{
                                 borderRadius: 2,
                                 mb: 1,
                                 border: '1px solid rgba(102, 126, 234, 0.2)',
                                 transition: 'all 0.3s ease',
+                                cursor: 'pointer',
                                 '&:hover': {
                                     backgroundColor: 'rgba(102, 126, 234, 0.1)',
                                     borderColor: 'primary.main',
