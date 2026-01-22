@@ -1,11 +1,23 @@
 import { useEffect, useState, useMemo } from "react";
 import { useSelector } from "react-redux";
+import {
+	Container,
+	Typography,
+	Box,
+	Card,
+	CardContent,
+	Grid,
+	CircularProgress,
+	Stack,
+	Chip,
+	alpha,
+} from "@mui/material";
+import { CheckCircle, Cancel, TrendingUp, TrendingDown } from "@mui/icons-material";
 import { AppState } from "../../../Redux/AppState";
 import { CoinsModel } from "../../../Models/CoinsModel";
 import { coinsService } from "../../../Services/CoinsService";
 import { openAiService } from "../../../Services/OpenAiService";
 import { PriceFormatter } from "../../../Utils/PriceFormatter";
-import "./Recommendations.css";
 
 type Recommendation = {
 	coin: CoinsModel;
@@ -102,91 +114,175 @@ export function Recommendations() {
 
 	if (selectedCoinIds.length === 0) {
 		return (
-			<div className="Recommendations">
-				<div className="Recommendations-empty">
-					<h2>No Coins Selected</h2>
-					<p>Please select coins on the Home page to view AI-powered recommendations.</p>
-				</div>
-			</div>
+			<Container maxWidth="xl" sx={{ py: 8 }}>
+				<Card>
+					<CardContent sx={{ textAlign: 'center', py: 8 }}>
+						<Typography variant="h4" gutterBottom>
+							No Coins Selected
+						</Typography>
+						<Typography variant="body1" color="text.secondary">
+							Please select coins on the Home page to view AI-powered recommendations.
+						</Typography>
+					</CardContent>
+				</Card>
+			</Container>
 		);
 	}
 
 	return (
-		<div className="Recommendations">
-			<div className="Recommendations-header">
-				<h1>AI-Powered Cryptocurrency Recommendations</h1>
-				<p className="Recommendations-subtitle">
-					Get personalized buy/sell recommendations based on market data analysis
-				</p>
-				{loading && (
-					<div className="Recommendations-loading">
-						<p>Analyzing selected coins...</p>
-					</div>
-				)}
-			</div>
+		<Box sx={{ minHeight: '100vh', py: 4, background: 'linear-gradient(180deg, rgba(10, 14, 39, 0.9) 0%, rgba(18, 22, 51, 0.95) 100%)' }}>
+			<Container maxWidth="xl">
+				<Box sx={{ mb: 4, textAlign: 'center' }}>
+					<Typography variant="h2" gutterBottom>
+						AI-Powered Cryptocurrency Recommendations
+					</Typography>
+					<Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+						Get personalized buy/sell recommendations based on market data analysis
+					</Typography>
+					{loading && (
+						<Chip
+							icon={<CircularProgress size={16} />}
+							label="Analyzing selected coins..."
+							color="primary"
+							variant="outlined"
+						/>
+					)}
+				</Box>
 
-			<div className="Recommendations-content">
-				<div className="Recommendations-grid">
+				<Grid container spacing={3}>
 					{recommendations.map((rec) => (
-						<div
-							key={rec.coin.id}
-							className={`Recommendations-card ${rec.recommendation === "buy" ? "buy" : "dont-buy"} ${rec.loading ? "loading" : ""}`}
-						>
-							<div className="Recommendations-card-header">
-								{rec.coin.image && (
-									<img src={rec.coin.image} alt={rec.coin.name} />
-								)}
-								<div className="Recommendations-card-title">
-									<h3>{rec.coin.name}</h3>
-									<p className="Recommendations-card-symbol">
-										{rec.coin.symbol?.toUpperCase()}
-									</p>
-								</div>
-							</div>
+						<Grid item xs={12} sm={6} md={4} key={rec.coin.id}>
+							<Card
+								sx={{
+									height: '100%',
+									display: 'flex',
+									flexDirection: 'column',
+									border: rec.recommendation === "buy" ? '2px solid' : '2px solid',
+									borderColor: rec.recommendation === "buy" ? 'success.main' : 'error.main',
+									background:
+										rec.recommendation === "buy"
+											? `linear-gradient(145deg, ${alpha('#10b981', 0.1)} 0%, ${alpha('#059669', 0.05)} 100%)`
+											: `linear-gradient(145deg, ${alpha('#ef4444', 0.1)} 0%, ${alpha('#dc2626', 0.05)} 100%)`,
+								}}
+							>
+								<CardContent sx={{ flexGrow: 1 }}>
+									{/* Header */}
+									<Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
+										{rec.coin.image && (
+											<Box
+												component="img"
+												src={rec.coin.image}
+												alt={rec.coin.name}
+												sx={{
+													width: 56,
+													height: 56,
+													borderRadius: '50%',
+													border: '2px solid',
+													borderColor: rec.recommendation === "buy" ? 'success.main' : 'error.main',
+												}}
+											/>
+										)}
+										<Box>
+											<Typography variant="h6" sx={{ fontSize: '1rem' }}>
+												{rec.coin.name}
+											</Typography>
+											<Chip
+												label={rec.coin.symbol?.toUpperCase()}
+												size="small"
+												sx={{
+													backgroundColor: alpha('#667eea', 0.2),
+													color: 'primary.light',
+													fontWeight: 600,
+												}}
+											/>
+										</Box>
+									</Stack>
 
-							{rec.coin.current_price && (
-								<div className="Recommendations-price">
-									<span className="Recommendations-price-label">Current Price:</span>
-									<span className="Recommendations-price-value">
-										{PriceFormatter.formatCurrency(rec.coin.current_price)}
-									</span>
-								</div>
-							)}
-
-							{rec.loading ? (
-								<div className="Recommendations-recommendation loading">
-									<div className="Recommendations-spinner"></div>
-									<p>Analyzing...</p>
-								</div>
-							) : (
-								<>
-									<div className={`Recommendations-badge ${rec.recommendation}`}>
-										{rec.recommendation === "buy" ? "✓ BUY" : "✗ DO NOT BUY"}
-									</div>
-									<div className="Recommendations-reason">
-										<p>{rec.reason}</p>
-									</div>
-								</>
-							)}
-
-							{rec.coin.market_cap && (
-								<div className="Recommendations-stats">
-									<div className="Recommendations-stat">
-										<span>Market Cap:</span>
-										<span>{PriceFormatter.formatCurrency(rec.coin.market_cap)}</span>
-									</div>
-									{rec.coin.total_volume && (
-										<div className="Recommendations-stat">
-											<span>Volume (24h):</span>
-											<span>{PriceFormatter.formatCurrency(rec.coin.total_volume)}</span>
-										</div>
+									{/* Current Price */}
+									{rec.coin.current_price && (
+										<Box sx={{ mb: 2 }}>
+											<Typography variant="body2" color="text.secondary" gutterBottom>
+												Current Price
+											</Typography>
+											<Typography variant="h6" color="primary.light">
+												{PriceFormatter.formatCurrency(rec.coin.current_price)}
+											</Typography>
+										</Box>
 									)}
-								</div>
-							)}
-						</div>
+
+									{/* Loading State */}
+									{rec.loading ? (
+										<Box sx={{ textAlign: 'center', py: 4 }}>
+											<CircularProgress />
+											<Typography variant="body2" sx={{ mt: 2 }}>Analyzing...</Typography>
+										</Box>
+									) : (
+										<>
+											{/* Recommendation Badge */}
+											<Box sx={{ mb: 2 }}>
+												<Chip
+													icon={
+														rec.recommendation === "buy" ? (
+															<CheckCircle sx={{ fontSize: 20 }} />
+														) : (
+															<Cancel sx={{ fontSize: 20 }} />
+														)
+													}
+													label={rec.recommendation === "buy" ? "BUY" : "DO NOT BUY"}
+													color={rec.recommendation === "buy" ? "success" : "error"}
+													sx={{
+														fontWeight: 700,
+														fontSize: '0.9rem',
+														py: 3,
+														width: '100%',
+														justifyContent: 'center',
+													}}
+												/>
+											</Box>
+
+											{/* Reason */}
+											<Box
+												sx={{
+													p: 2,
+													borderRadius: 2,
+													backgroundColor: alpha('#667eea', 0.1),
+													borderLeft: '4px solid',
+													borderLeftColor: rec.recommendation === "buy" ? 'success.main' : 'error.main',
+													mb: 2,
+												}}
+											>
+												<Typography variant="body2" sx={{ lineHeight: 1.6 }}>
+													{rec.reason}
+												</Typography>
+											</Box>
+										</>
+									)}
+
+									{/* Stats */}
+									{rec.coin.market_cap && (
+										<Stack spacing={1} sx={{ mt: 'auto' }}>
+											<Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+												<Typography variant="body2" color="text.secondary">Market Cap:</Typography>
+												<Typography variant="body2" fontWeight={600}>
+													{PriceFormatter.formatCurrency(rec.coin.market_cap)}
+												</Typography>
+											</Box>
+											{rec.coin.total_volume && (
+												<Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+													<Typography variant="body2" color="text.secondary">Volume (24h):</Typography>
+													<Typography variant="body2" fontWeight={600}>
+														{PriceFormatter.formatCurrency(rec.coin.total_volume)}
+													</Typography>
+												</Box>
+											)}
+										</Stack>
+									)}
+								</CardContent>
+							</Card>
+						</Grid>
 					))}
-				</div>
-			</div>
-		</div>
+				</Grid>
+			</Container>
+		</Box>
 	);
 }

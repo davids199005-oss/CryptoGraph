@@ -1,11 +1,24 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import {
+    Container,
+    Typography,
+    Box,
+    Card,
+    CardContent,
+    Grid,
+    Chip,
+    Stack,
+    alpha,
+    Paper,
+    CircularProgress,
+} from "@mui/material";
+import { TrendingUp, TrendingDown } from "@mui/icons-material";
 import { AppState } from "../../../Redux/AppState";
 import { CoinsModel } from "../../../Models/CoinsModel";
 import { coinsService } from "../../../Services/CoinsService";
 import { PriceFormatter } from "../../../Utils/PriceFormatter";
-import "./Reports.css";
 
 type OhlcCandle = {
     open: number;
@@ -233,147 +246,215 @@ export function Reports() {
 
     if (selectedCoinIds.length === 0) {
         return (
-            <div className="Reports">
-                <div className="Reports-empty">
-                    <h2>No Coins Selected</h2>
-                    <p>Please select coins on the Home page to view reports and charts.</p>
-                </div>
-            </div>
+            <Container maxWidth="xl" sx={{ py: 8 }}>
+                <Card>
+                    <CardContent sx={{ textAlign: 'center', py: 8 }}>
+                        <Typography variant="h4" gutterBottom>
+                            No Coins Selected
+                        </Typography>
+                        <Typography variant="body1" color="text.secondary">
+                            Please select coins on the Home page to view reports and charts.
+                        </Typography>
+                    </CardContent>
+                </Card>
+            </Container>
         );
     }
 
     return (
-        <div className="Reports">
-            <div className="Reports-header">
-                <h1>Coins Reports & Real-Time Chart</h1>
-                <div className="Reports-meta">
-                    {loading && <span className="Reports-status">Refreshing...</span>}
-                    {lastUpdated && (
-                        <span className="Reports-status">
-                            Last updated: {lastUpdated.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                        </span>
-                    )}
-                </div>
-            </div>
+        <Box sx={{ minHeight: '100vh', py: 4, background: 'linear-gradient(180deg, rgba(10, 14, 39, 0.9) 0%, rgba(18, 22, 51, 0.95) 100%)' }}>
+            <Container maxWidth="xl">
+                <Box sx={{ mb: 4 }}>
+                    <Typography variant="h2" gutterBottom>
+                        Coins Reports & Real-Time Chart
+                    </Typography>
+                    <Stack direction="row" spacing={2} alignItems="center">
+                        {loading && (
+                            <Chip
+                                icon={<CircularProgress size={16} />}
+                                label="Refreshing..."
+                                color="primary"
+                                variant="outlined"
+                            />
+                        )}
+                        {lastUpdated && (
+                            <Typography variant="body2" color="text.secondary">
+                                Last updated: {lastUpdated.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                            </Typography>
+                        )}
+                    </Stack>
+                </Box>
 
-            <div className="Reports-content">
                 {/* Line Chart */}
-                <div className="Reports-chart-section">
-                    <h2>Real-Time Line Chart</h2>
-                    {selectedCoinIds.length > 0 && chartData.length > 0 ? (
-                        <div className="Reports-chart-container">
-                            <ResponsiveContainer width="100%" height={500}>
-                                <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                                    <XAxis
-                                        dataKey="time"
-                                        stroke="#1a1a1a"
-                                        style={{ fontSize: '12px' }}
-                                        label={{ value: 'Time', position: 'insideBottom', offset: -5, style: { textAnchor: 'middle', fill: '#666', fontSize: '14px', fontWeight: '600' } }}
-                                    />
-                                    <YAxis
-                                        stroke="#1a1a1a"
-                                        style={{ fontSize: '12px' }}
-                                        domain={['auto', 'auto']}
-                                        label={{ value: 'Price (USD)', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#666', fontSize: '14px', fontWeight: '600' } }}
-                                    />
-                                    <Tooltip
-                                        contentStyle={{
-                                            backgroundColor: '#fff',
-                                            border: '1px solid #e2e8f0',
-                                            borderRadius: '4px'
-                                        }}
-                                        formatter={(value: number | undefined) => {
-                                            if (value === undefined) return '';
-                                            return PriceFormatter.formatCurrency(value);
-                                        }}
-                                    />
-                                    <Legend />
-                                    {selectedCoins.map((coin, index) => {
-                                        if (!coin.symbol) return null;
-                                        const color = chartColors[index % chartColors.length];
-                                        return (
-                                            <Line
-                                                key={coin.id}
-                                                type="monotone"
-                                                dataKey={coin.symbol.toUpperCase()}
-                                                stroke={color}
-                                                strokeWidth={3}
-                                                dot={false}
-                                                activeDot={{ r: 5 }}
-                                                name={coin.name || coin.symbol.toUpperCase()}
-                                            />
-                                        );
-                                    })}
-                                </LineChart>
-                            </ResponsiveContainer>
-                        </div>
-                    ) : (
-                        <div className="Reports-chart-placeholder">
-                            <p>Loading chart data...</p>
-                        </div>
-                    )}
-                </div>
+                <Card sx={{ mb: 4 }}>
+                    <CardContent>
+                        <Typography variant="h4" gutterBottom>
+                            Real-Time Line Chart
+                        </Typography>
+                        {selectedCoinIds.length > 0 && chartData.length > 0 ? (
+                            <Box sx={{ mt: 3 }}>
+                                <ResponsiveContainer width="100%" height={500}>
+                                    <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 60 }}>
+                                        <CartesianGrid strokeDasharray="3 3" stroke={alpha('#667eea', 0.1)} />
+                                        <XAxis
+                                            dataKey="time"
+                                            stroke="#ffffff"
+                                            style={{ fontSize: '12px' }}
+                                            label={{ value: 'Time', position: 'insideBottom', offset: -5, style: { textAnchor: 'middle', fill: '#b8bcc8', fontSize: '14px', fontWeight: '600' } }}
+                                        />
+                                        <YAxis
+                                            stroke="#ffffff"
+                                            style={{ fontSize: '12px' }}
+                                            domain={['auto', 'auto']}
+                                            label={{ value: 'Price (USD)', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#b8bcc8', fontSize: '14px', fontWeight: '600' } }}
+                                        />
+                                        <Tooltip
+                                            contentStyle={{
+                                                backgroundColor: '#121633',
+                                                border: '1px solid rgba(102, 126, 234, 0.3)',
+                                                borderRadius: '12px',
+                                                color: '#ffffff',
+                                            }}
+                                            formatter={(value: number | undefined) => {
+                                                if (value === undefined) return '';
+                                                return PriceFormatter.formatCurrency(value);
+                                            }}
+                                        />
+                                        <Legend />
+                                        {selectedCoins.map((coin, index) => {
+                                            if (!coin.symbol) return null;
+                                            const color = chartColors[index % chartColors.length];
+                                            return (
+                                                <Line
+                                                    key={coin.id}
+                                                    type="monotone"
+                                                    dataKey={coin.symbol.toUpperCase()}
+                                                    stroke={color}
+                                                    strokeWidth={3}
+                                                    dot={false}
+                                                    activeDot={{ r: 5 }}
+                                                    name={coin.name || coin.symbol.toUpperCase()}
+                                                />
+                                            );
+                                        })}
+                                    </LineChart>
+                                </ResponsiveContainer>
+                            </Box>
+                        ) : (
+                            <Box sx={{ textAlign: 'center', py: 8 }}>
+                                <CircularProgress />
+                                <Typography variant="body1" sx={{ mt: 2 }}>Loading chart data...</Typography>
+                            </Box>
+                        )}
+                    </CardContent>
+                </Card>
 
                 {/* Coin Reports */}
-                <div className="Reports-coins-section">
-                    <h2>Coins Reports</h2>
-                    <div className="Reports-coins-grid">
+                <Box sx={{ mb: 4 }}>
+                    <Typography variant="h4" gutterBottom>
+                        Coins Reports
+                    </Typography>
+                    <Grid container spacing={3}>
                         {coinReports.map((report) => (
-                            <div key={report.coin.id} className="Reports-coin-card">
-                                <div className="Reports-coin-header">
-                                    {report.coin.image && (
-                                        <img src={report.coin.image} alt={report.coin.name} />
-                                    )}
-                                    <div>
-                                        <h3>{report.coin.name}</h3>
-                                        <p className="Reports-coin-symbol">{report.coin.symbol?.toUpperCase()}</p>
-                                    </div>
-                                </div>
+                            <Grid item xs={12} sm={6} md={4} key={report.coin.id}>
+                                <Card sx={{ height: '100%' }}>
+                                    <CardContent>
+                                        <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
+                                            {report.coin.image && (
+                                                <Box
+                                                    component="img"
+                                                    src={report.coin.image}
+                                                    alt={report.coin.name}
+                                                    sx={{
+                                                        width: 48,
+                                                        height: 48,
+                                                        borderRadius: '50%',
+                                                        border: '2px solid',
+                                                        borderColor: 'primary.main',
+                                                    }}
+                                                />
+                                            )}
+                                            <Box>
+                                                <Typography variant="h6" sx={{ fontSize: '1rem' }}>
+                                                    {report.coin.name}
+                                                </Typography>
+                                                <Chip
+                                                    label={report.coin.symbol?.toUpperCase()}
+                                                    size="small"
+                                                    sx={{
+                                                        backgroundColor: alpha('#667eea', 0.2),
+                                                        color: 'primary.light',
+                                                        fontWeight: 600,
+                                                    }}
+                                                />
+                                            </Box>
+                                        </Stack>
 
-                                <div className="Reports-coin-price">
-                                    <span className="Reports-price-label">Current Price:</span>
-                                    <span className="Reports-price-value">{PriceFormatter.formatCurrency(report.currentPrice)}</span>
-                                </div>
+                                        <Box sx={{ mb: 2 }}>
+                                            <Typography variant="body2" color="text.secondary" gutterBottom>
+                                                Current Price
+                                            </Typography>
+                                            <Typography variant="h6" color="primary.light">
+                                                {PriceFormatter.formatCurrency(report.currentPrice)}
+                                            </Typography>
+                                        </Box>
 
-                                <div className="Reports-coin-change">
-                                    <span className="Reports-change-label">24h Change:</span>
-                                    <span
-                                        className="Reports-change-value"
-                                        style={{
-                                            color: report.priceChange >= 0 ? "#16a34a" : "#dc2626"
-                                        }}
-                                    >
-                                        {report.priceChange >= 0 ? "+" : ""}{report.priceChangePercent.toFixed(2)}%
-                                        ({PriceFormatter.formatCurrency(report.priceChange)})
-                                    </span>
-                                </div>
+                                        <Box sx={{ mb: 2 }}>
+                                            <Typography variant="body2" color="text.secondary" gutterBottom>
+                                                24h Change
+                                            </Typography>
+                                            <Stack direction="row" spacing={1} alignItems="center">
+                                                {report.priceChange >= 0 ? (
+                                                    <TrendingUp sx={{ color: 'success.main' }} />
+                                                ) : (
+                                                    <TrendingDown sx={{ color: 'error.main' }} />
+                                                )}
+                                                <Typography
+                                                    variant="body1"
+                                                    sx={{
+                                                        color: report.priceChange >= 0 ? 'success.main' : 'error.main',
+                                                        fontWeight: 600,
+                                                    }}
+                                                >
+                                                    {report.priceChange >= 0 ? "+" : ""}{report.priceChangePercent.toFixed(2)}%
+                                                    ({PriceFormatter.formatCurrency(report.priceChange)})
+                                                </Typography>
+                                            </Stack>
+                                        </Box>
 
-                                {report.coin.market_cap && (
-                                    <div className="Reports-coin-info">
-                                        <span>Market Cap:</span>
-                                        <span>{PriceFormatter.formatCurrency(report.coin.market_cap)}</span>
-                                    </div>
-                                )}
-
-                                {report.coin.total_volume && (
-                                    <div className="Reports-coin-info">
-                                        <span>Volume:</span>
-                                        <span>{PriceFormatter.formatCurrency(report.coin.total_volume)}</span>
-                                    </div>
-                                )}
-
-                                {report.coin.market_cap_rank && (
-                                    <div className="Reports-coin-info">
-                                        <span>Rank:</span>
-                                        <span>#{report.coin.market_cap_rank}</span>
-                                    </div>
-                                )}
-                            </div>
+                                        <Stack spacing={1}>
+                                            {report.coin.market_cap && (
+                                                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                    <Typography variant="body2" color="text.secondary">Market Cap:</Typography>
+                                                    <Typography variant="body2" fontWeight={600}>
+                                                        {PriceFormatter.formatCurrency(report.coin.market_cap)}
+                                                    </Typography>
+                                                </Box>
+                                            )}
+                                            {report.coin.total_volume && (
+                                                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                    <Typography variant="body2" color="text.secondary">Volume:</Typography>
+                                                    <Typography variant="body2" fontWeight={600}>
+                                                        {PriceFormatter.formatCurrency(report.coin.total_volume)}
+                                                    </Typography>
+                                                </Box>
+                                            )}
+                                            {report.coin.market_cap_rank && (
+                                                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                    <Typography variant="body2" color="text.secondary">Rank:</Typography>
+                                                    <Typography variant="body2" fontWeight={600}>
+                                                        #{report.coin.market_cap_rank}
+                                                    </Typography>
+                                                </Box>
+                                            )}
+                                        </Stack>
+                                    </CardContent>
+                                </Card>
+                            </Grid>
                         ))}
-                    </div>
-                </div>
-            </div>
-        </div>
+                    </Grid>
+                </Box>
+            </Container>
+        </Box>
     );
 }

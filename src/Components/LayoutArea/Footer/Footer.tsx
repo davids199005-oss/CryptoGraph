@@ -4,7 +4,7 @@ export function Footer() {
     return (
         <div className="Footer">
 
-			<p>Footer Component</p>
+            <p>Footer Component</p>
 
         </div>
     );
