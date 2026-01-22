@@ -35,9 +35,15 @@ class CoinsService {
 	 */
 	public async getCoinPrices(coinId: string): Promise<CoinPriceData | null> {
         try {
-            const url = appConfig.CoinPriceUrl.replace("{id}", coinId);
+            const trimmedId = coinId.trim();
+            if (!trimmedId) {
+                console.warn("Skipping price lookup for empty coin id");
+                return null;
+            }
+
+            const url = appConfig.CoinPriceUrl.replace("{id}", trimmedId);
             const response = await axios.get<CoinGeckoPriceResponse>(url);
-            const prices = response.data[coinId];
+            const prices = response.data[trimmedId];
             if (prices && prices.usd !== undefined) {
                 return {
                     usd: prices.usd,
@@ -58,7 +64,13 @@ class CoinsService {
 	 */
 	public async getCoinDetails(coinId: string): Promise<CoinGeckoCoinDetailsResponse | null> {
         try {
-            const url = appConfig.CoinDetailsUrl.replace("{id}", coinId);
+            const trimmedId = coinId.trim();
+            if (!trimmedId) {
+                console.warn("Skipping details lookup for empty coin id");
+                return null;
+            }
+
+            const url = appConfig.CoinDetailsUrl.replace("{id}", trimmedId);
             const response = await axios.get<CoinGeckoCoinDetailsResponse>(url);
             return response.data;
         } catch (error) {
@@ -73,7 +85,13 @@ class CoinsService {
 	 */
 	public async getCoinDetailsWithMarketData(coinId: string): Promise<CoinGeckoCoinDetailsResponse | null> {
         try {
-            const url = `${appConfig.CoinDetailsUrl.replace("{id}", coinId)}?market_data=true`;
+            const trimmedId = coinId.trim();
+            if (!trimmedId) {
+                console.warn("Skipping market data lookup for empty coin id");
+                return null;
+            }
+
+            const url = `${appConfig.CoinDetailsUrl.replace("{id}", trimmedId)}?market_data=true`;
             const response = await axios.get<CoinGeckoCoinDetailsResponse>(url);
             return response.data;
         } catch (error) {
@@ -89,12 +107,13 @@ class CoinsService {
 	 */
 	public async getMultipleCoinsPrices(coinIds: string[]): Promise<Map<string, number>> {
         try {
-            if (coinIds.length === 0) {
+            const validIds = coinIds.map(id => id.trim()).filter(id => id.length > 0);
+            if (validIds.length === 0) {
                 return new Map();
             }
 
             // Make single API request to CoinGecko for all coin prices
-            const ids = coinIds.join(",");
+            const ids = validIds.join(",");
             const url = appConfig.CoinPriceUrl.replace("{id}", ids);
             const response = await axios.get<Record<string, { usd: number; eur?: number; ils?: number }>>(url);
 
@@ -102,7 +121,7 @@ class CoinsService {
             const priceMap = new Map<string, number>();
             Object.keys(response.data).forEach(coinId => {
                 const priceData = response.data[coinId];
-                if (priceData && priceData.usd) {
+                if (priceData && priceData.usd !== undefined) {
                     priceMap.set(coinId, priceData.usd);
                 }
             });
@@ -121,18 +140,22 @@ class CoinsService {
 	 */
 	public async getMultipleCoinsPricesBySymbols(coins: { id: string; symbol: string }[]): Promise<Map<string, number>> {
         try {
-            if (coins.length === 0) {
+            const validCoins = coins
+                .map(coin => ({ id: coin.id.trim(), symbol: coin.symbol.trim() }))
+                .filter(coin => coin.id.length > 0 && coin.symbol.length > 0);
+
+            if (validCoins.length === 0) {
                 return new Map();
             }
 
             // Get symbols for CryptoCompare API
-            const symbols = coins.map(coin => coin.symbol.toUpperCase()).join(",");
+            const symbols = validCoins.map(coin => coin.symbol.toUpperCase()).join(",");
             const url = appConfig.CryptoComparePriceMultiUrl.replace("{symbols}", symbols);
             const response = await axios.get<CryptoComparePriceResponse>(url);
 
             // Map coin IDs to prices (using coin.id as key to match with selected coins)
             const priceMap = new Map<string, number>();
-            coins.forEach(coin => {
+            validCoins.forEach(coin => {
                 const symbol = coin.symbol.toUpperCase();
                 const priceData = response.data[symbol];
                 if (priceData && priceData.USD !== undefined) {
@@ -153,7 +176,13 @@ class CoinsService {
 	 */
 	public async getCoinDataForRecommendation(coinId: string): Promise<CoinRecommendationData | null> {
 		try {
-			const url = appConfig.CoinDetailsUrl.replace("{id}", coinId);
+            const trimmedId = coinId.trim();
+            if (!trimmedId) {
+                console.warn("Skipping recommendation lookup for empty coin id");
+                return null;
+            }
+
+            const url = appConfig.CoinDetailsUrl.replace("{id}", trimmedId);
 			const response = await axios.get<CoinGeckoCoinDetailsResponse>(url);
 
 			const marketData = response.data.market_data;

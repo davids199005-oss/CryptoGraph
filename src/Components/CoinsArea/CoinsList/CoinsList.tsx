@@ -27,17 +27,25 @@ export function CoinsList() {
 			return;
 		}
 
+		let isMounted = true;
 		setIsLoading(true);
 		coinsService.getCoinsList()
 			.then((coins: CoinsModel[]) => {
+				if (!isMounted) return;
 				dispatch(coinsSlice.actions.initCoins(coins));
 			})
 			.catch((err: Error) => {
 				console.error("Error loading coins:", err);
 			})
 			.finally(() => {
-				setIsLoading(false);
+				if (isMounted) {
+					setIsLoading(false);
+				}
 			});
+
+		return () => {
+			isMounted = false;
+		};
 	}, [dispatch, coinsFromStore.length]);
 
 	// Normalize search query and filter coins by name or ID

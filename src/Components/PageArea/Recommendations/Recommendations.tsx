@@ -10,6 +10,7 @@ import {
 	CircularProgress,
 	Stack,
 	Chip,
+	Alert,
 	alpha,
 } from "@mui/material";
 import { CheckCircle, Cancel } from "@mui/icons-material";
@@ -33,6 +34,7 @@ export function Recommendations() {
 
 	const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
 	const [loading, setLoading] = useState<boolean>(false);
+	const [apiKeyMissing, setApiKeyMissing] = useState<boolean>(false);
 
 	const selectedCoins = useMemo(() => {
 		return allCoins.filter(coin => coin.id && selectedCoinIds.includes(coin.id));
@@ -41,6 +43,7 @@ export function Recommendations() {
 	useEffect(() => {
 		if (selectedCoinIds.length === 0) {
 			setRecommendations([]);
+			setApiKeyMissing(false);
 			return;
 		}
 
@@ -48,6 +51,15 @@ export function Recommendations() {
 
 		async function fetchRecommendations() {
 			setLoading(true);
+
+			if (!openAiService.isConfigured()) {
+				setApiKeyMissing(true);
+				setRecommendations([]);
+				setLoading(false);
+				return;
+			}
+
+			setApiKeyMissing(false);
 			setRecommendations(
 				selectedCoins.map(coin => ({
 					coin,
@@ -73,8 +85,18 @@ export function Recommendations() {
 					// Get recommendation from OpenAI
 					const recommendation = await openAiService.getCoinRecommendation(coinData);
 
-					if (isCancelled || !recommendation) {
+					if (isCancelled) {
 						return null;
+					}
+
+					if (!recommendation) {
+						return {
+							coin,
+							recommendation: "do not buy" as const,
+							reason: "Recommendation unavailable at the moment.",
+							loading: false,
+							error: "No recommendation returned",
+						} as Recommendation;
 					}
 
 					return {
@@ -99,9 +121,8 @@ export function Recommendations() {
 
 			if (!isCancelled) {
 				setRecommendations(results.filter(r => r !== null) as Recommendation[]);
+				setLoading(false);
 			}
-
-			setLoading(false);
 		}
 
 		fetchRecommendations();
@@ -139,6 +160,11 @@ export function Recommendations() {
 					<Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
 						Get personalized buy/sell recommendations based on market data analysis
 					</Typography>
+					{apiKeyMissing && (
+						<Alert severity="warning" sx={{ maxWidth: 640, margin: '0 auto' }}>
+							Add VITE_OPENAI_API_KEY to enable AI recommendations.
+						</Alert>
+					)}
 					{loading && (
 						<Chip
 							icon={<CircularProgress size={16} />}
@@ -276,6 +302,12 @@ export function Recommendations() {
 												</Box>
 											)}
 										</Stack>
+									)}
+
+									{rec.error && (
+										<Typography variant="body2" color="error" sx={{ mt: 1 }}>
+											{rec.error}
+										</Typography>
 									)}
 								</CardContent>
 							</Card>

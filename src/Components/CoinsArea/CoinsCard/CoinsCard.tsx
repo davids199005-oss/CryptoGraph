@@ -87,6 +87,12 @@ export function CoinsCard(props: CoinsCardProps) {
 		e.preventDefault();
 		e.stopPropagation();
 
+		const coinId = props.coin.id?.trim();
+		if (!coinId) {
+			console.warn("Cannot load prices: coin id is missing");
+			return;
+		}
+
 		if (showPrices) {
 			setShowPrices(false);
 			setPrices(null);
@@ -95,7 +101,7 @@ export function CoinsCard(props: CoinsCardProps) {
 
 		try {
 			setLoading(true);
-			const coinPrices = await coinsService.getCoinPrices(props.coin.id || "");
+			const coinPrices = await coinsService.getCoinPrices(coinId);
 			
 			if (coinPrices) {
 				setPrices(coinPrices);

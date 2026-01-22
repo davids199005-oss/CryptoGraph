@@ -29,15 +29,13 @@ class AppConfig {
      * Use {symbols} placeholder for comma-separated symbol list
      */
     public readonly CryptoComparePriceMultiUrl =
-        "https://min-api.cryptocompare.com/data/pricemulti?tsyms=usd&fsyms={symbols}";
+        "https://min-api.cryptocompare.com/data/pricemulti?tsyms=USD&fsyms={symbols}";
 
-    /**
-     * OpenAI API endpoint for chat completions
-     * (Note: SDK handles this internally, kept for reference)
-     */
-    public readonly OpenAIChatCompletionsUrl =
-        "https://api.openai.com/v1/chat/completions";
-    
+        /**
+         * OpenAI API endpoint for chat completions
+         */
+        public readonly OpenAiApi = "https://api.openai.com/v1/chat/completions";
+
     /**
      * OpenAI API key loaded from environment variable
      * Must be set in .env as VITE_OPENAI_API_KEY
