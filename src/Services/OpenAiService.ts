@@ -29,10 +29,10 @@ class OpenAiService {
      * @param messages - Array of chat messages with roles and content
      */
     public async getChatCompletions(messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[]): Promise<OpenAI.Chat.Completions.ChatCompletionMessage> {
-        const response = await this.openAi.chat.completions.create({
-            model: "gpt-4o-mini",
-            messages: messages,
-        });
+		const response = await this.openAi.chat.completions.create({
+			model: "gpt-5-mini",
+			messages: messages,
+		});
         return response.choices[0].message;
     }
 
