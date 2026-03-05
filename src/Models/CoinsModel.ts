@@ -1,0 +1,28 @@
+export class CoinsModel {
+    public readonly id?: string;
+    public readonly symbol?: string;
+    public readonly name?: string;
+    public readonly image?: string;
+    public readonly current_price?: number;
+    public readonly market_cap?: number;
+    public readonly market_cap_rank?: number;
+    public readonly fully_diluted_valuation?: number;
+    public readonly total_volume?: number;
+    public readonly high_24h?: number;
+    public readonly low_24h?: number;
+    public readonly price_change_24h?: number;
+    public readonly price_change_percentage_24h?: number;
+    public readonly market_cap_change_24h?: number;
+    public readonly market_cap_change_percentage_24h?: number;
+    public readonly circulating_supply?: number;
+    public readonly total_supply?: number;
+    public readonly max_supply?: number;
+    public readonly ath?: number;
+    public readonly ath_change_percentage?: number;
+    public readonly ath_date?: string;
+    public readonly atl?: number;
+    public readonly atl_change_percentage?: number;
+    public readonly atl_date?: string;
+    public readonly roi?: null;
+    public readonly last_updated?: string;
+}

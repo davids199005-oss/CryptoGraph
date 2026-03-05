@@ -1,0 +1,89 @@
+@font-face {
+	font-family: 'MainFont';
+	src: url('/Fonts/MainFont.otf') format('opentype');
+	font-weight: normal;
+	font-style: normal;
+	font-display: swap;
+}
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+html,
+body {
+	height: 100%;
+	width: 100%;
+}
+
+#root {
+	height: 100%;
+	width: 100%;
+}
+
+body {
+	font-family: 'Rajdhani', 'MainFont', -apple-system, BlinkMacSystemFont, sans-serif;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	background-color: #050810;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	font-family: 'Orbitron', 'MainFont', sans-serif;
+}
+
+code {
+	font-family: 'MainFont', source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+		monospace;
+}
+
+@keyframes shimmer {
+	0% {
+		background-position: -200% 0;
+	}
+
+	100% {
+		background-position: 200% 0;
+	}
+}
+
+@keyframes fadeInUp {
+	from {
+		opacity: 0;
+		transform: translateY(30px);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* Futuristic: neon glow pulse */
+@keyframes neonPulse {
+	0%, 100% {
+		opacity: 0.6;
+		filter: drop-shadow(0 0 6px rgba(0, 245, 255, 0.5));
+	}
+	50% {
+		opacity: 1;
+		filter: drop-shadow(0 0 20px rgba(0, 245, 255, 0.8));
+	}
+}
+
+/* Scan line sweep (optional use) */
+@keyframes scanline {
+	0% {
+		transform: translateY(-100%);
+	}
+	100% {
+		transform: translateY(100vh);
+	}
+}
