@@ -1,7 +1,7 @@
 import axios from "axios";
 import { CoinsModel } from "../Models/CoinsModel";
 import { appConfig } from "../Utils/AppConfig";
-import { mapCoinDetailsResponseToModel } from "../Utils/СoinDetailsMapper";
+import { mapCoinDetailsResponseToModel } from "../Utils/coinDetailsMapper";
 import {
 	CoinGeckoPriceResponse,
 	CoinGeckoCoinDetailsResponse,
