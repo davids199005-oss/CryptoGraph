@@ -23,7 +23,7 @@
 | **UI** | React 19, React Router 7, MUI 6, Recharts |
 | **State** | Redux Toolkit (coins list, selected coins, search) |
 | **Data** | Axios, CoinGecko API, CryptoCompare API |
-| **AI** | OpenAI API (gpt-4o by default) |
+| **AI** | OpenAI API (gpt-5-mini by default) |
 | **Build** | Vite 7, TypeScript 5.9 |
 
 ---
