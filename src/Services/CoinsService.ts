@@ -1,6 +1,7 @@
 import axios from "axios";
 import { CoinsModel } from "../Models/CoinsModel";
 import { appConfig } from "../Utils/AppConfig";
+import { mapCoinDetailsResponseToModel } from "../Utils/coinDetailsMapper";
 import {
 	CoinGeckoPriceResponse,
 	CoinGeckoCoinDetailsResponse,
@@ -99,6 +100,17 @@ class CoinsService {
             return null;
         }
     }
+
+	/**
+	 * Fetches coin details with market data and returns as CoinsModel.
+	 * @param coinId - The coin identifier
+	 * @returns CoinsModel or null if request fails or response is empty
+	 */
+	public async getCoinDetailsAsModel(coinId: string): Promise<CoinsModel | null> {
+		const response = await this.getCoinDetailsWithMarketData(coinId);
+		if (!response) return null;
+		return mapCoinDetailsResponseToModel(response, coinId);
+	}
 
 	/**
 	 * Fetches prices for multiple coins in a single API request (optimized batch operation)

@@ -2,12 +2,13 @@ import { configureStore } from "@reduxjs/toolkit";
 import { AppState } from "./AppState";
 import { coinsSlice, selectedCoinsSlice } from "./CoinsSlice";
 import { searchSlice } from "./SearchSlice";
-import { loadSelectedCoinsFromStorage, saveSelectedCoinsToStorage } from "../Utils/LocalStorageUtils";
+import { loadSelectedCoinsFromStorage } from "../Utils/LocalStorageUtils";
+import { persistSelectedCoinsMiddleware } from "./middleware/persistSelectedCoinsMiddleware";
 
 /**
  * Initialize Redux store with persistence
  * - Loads previously selected coins from localStorage
- * - Automatically persists selected coins to localStorage on changes
+ * - Middleware persists selected coins to localStorage on every state change
  */
 const preloadedState: AppState = {
     coins: [],
@@ -15,21 +16,12 @@ const preloadedState: AppState = {
     searchQuery: "",
 };
 
-export const store = configureStore<AppState>({
+export const store = configureStore({
     reducer: {
         coins: coinsSlice.reducer,
         selectedCoins: selectedCoinsSlice.reducer,
         searchQuery: searchSlice.reducer,
     },
-    preloadedState: preloadedState,
-});
-
-/**
- * Subscribe to selectedCoins changes and persist to localStorage
- */
-store.subscribe(() => {
-    const state = store.getState();
-    if (state.selectedCoins) {
-        saveSelectedCoinsToStorage(state.selectedCoins);
-    }
+    preloadedState,
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(persistSelectedCoinsMiddleware),
 });

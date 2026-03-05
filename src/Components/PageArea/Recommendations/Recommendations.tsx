@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import {
 	Container,
@@ -14,123 +14,18 @@ import {
 import Grid from "@mui/material/Grid2";
 import { CheckCircle, Cancel } from "@mui/icons-material";
 import { AppState } from "../../../Redux/AppState";
-import { CoinsModel } from "../../../Models/CoinsModel";
-import { coinsService } from "../../../Services/CoinsService";
-import { openAiService } from "../../../Services/OpenAiService";
 import { PriceFormatter } from "../../../Utils/PriceFormatter";
-
-type Recommendation = {
-	coin: CoinsModel;
-	recommendation: "buy" | "do not buy";
-	reason: string;
-	loading: boolean;
-	error?: string;
-};
+import { useRecommendations } from "../../../Hooks/useRecommendations";
 
 export function Recommendations() {
 	const allCoins = useSelector((state: AppState) => state.coins);
 	const selectedCoinIds = useSelector((state: AppState) => state.selectedCoins);
 
-	const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
-	const [loading, setLoading] = useState<boolean>(false);
-	const [apiKeyMissing, setApiKeyMissing] = useState<boolean>(false);
-
 	const selectedCoins = useMemo(() => {
 		return allCoins.filter(coin => coin.id && selectedCoinIds.includes(coin.id));
 	}, [allCoins, selectedCoinIds]);
 
-	useEffect(() => {
-		if (selectedCoinIds.length === 0) {
-			setRecommendations([]);
-			setApiKeyMissing(false);
-			return;
-		}
-
-		let isCancelled = false;
-
-		async function fetchRecommendations() {
-			setLoading(true);
-
-			if (!openAiService.isConfigured()) {
-				setApiKeyMissing(true);
-				setRecommendations([]);
-				setLoading(false);
-				return;
-			}
-
-			setApiKeyMissing(false);
-			setRecommendations(
-				selectedCoins.map(coin => ({
-					coin,
-					recommendation: "buy" as const,
-					reason: "",
-					loading: true,
-				}))
-			);
-
-			const recommendationPromises = selectedCoins.map(async (coin) => {
-				if (!coin.id) {
-					return null;
-				}
-
-				try {
-					// Get detailed coin data
-					const coinData = await coinsService.getCoinDataForRecommendation(coin.id);
-
-					if (isCancelled || !coinData) {
-						return null;
-					}
-
-					// Get recommendation from OpenAI
-					const recommendation = await openAiService.getCoinRecommendation(coinData);
-
-					if (isCancelled) {
-						return null;
-					}
-
-					if (!recommendation) {
-						return {
-							coin,
-							recommendation: "do not buy" as const,
-							reason: "Recommendation unavailable at the moment.",
-							loading: false,
-							error: "No recommendation returned",
-						} as Recommendation;
-					}
-
-					return {
-						coin,
-						recommendation: recommendation.recommendation,
-						reason: recommendation.reason,
-						loading: false,
-					} as Recommendation;
-				} catch (error) {
-					console.error(`Error fetching recommendation for ${coin.name}:`, error);
-					return {
-						coin,
-						recommendation: "do not buy" as const,
-						reason: "Failed to fetch recommendation data.",
-						loading: false,
-						error: "Error loading recommendation",
-					} as Recommendation;
-				}
-			});
-
-			const results = await Promise.all(recommendationPromises);
-
-			if (!isCancelled) {
-				setRecommendations(results.filter(r => r !== null) as Recommendation[]);
-				setLoading(false);
-			}
-		}
-
-		fetchRecommendations();
-
-		return () => {
-			isCancelled = true;
-		};
-	}, [selectedCoinIds, selectedCoins]);
-
+	const { recommendations, loading, apiKeyMissing } = useRecommendations(selectedCoinIds, selectedCoins);
 
 	if (selectedCoinIds.length === 0) {
 		return (
@@ -191,7 +86,6 @@ export function Recommendations() {
 								}}
 							>
 								<CardContent sx={{ flexGrow: 1 }}>
-									{/* Header */}
 									<Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
 										{rec.coin.image && (
 											<Box
@@ -223,7 +117,6 @@ export function Recommendations() {
 										</Box>
 									</Stack>
 
-									{/* Current Price */}
 									{rec.coin.current_price && (
 										<Box sx={{ mb: 2 }}>
 											<Typography variant="body2" color="text.secondary" gutterBottom>
@@ -235,7 +128,6 @@ export function Recommendations() {
 										</Box>
 									)}
 
-									{/* Loading State */}
 									{rec.loading ? (
 										<Box sx={{ textAlign: 'center', py: 4 }}>
 											<CircularProgress />
@@ -243,7 +135,6 @@ export function Recommendations() {
 										</Box>
 									) : (
 										<>
-											{/* Recommendation Badge */}
 											<Box sx={{ mb: 2 }}>
 												<Chip
 													icon={
@@ -265,7 +156,6 @@ export function Recommendations() {
 												/>
 											</Box>
 
-											{/* Reason */}
 											<Box
 												sx={{
 													p: 2,
@@ -283,7 +173,6 @@ export function Recommendations() {
 										</>
 									)}
 
-									{/* Stats */}
 									{rec.coin.market_cap && (
 										<Stack spacing={1} sx={{ mt: 'auto' }}>
 											<Box sx={{ display: 'flex', justifyContent: 'space-between' }}>

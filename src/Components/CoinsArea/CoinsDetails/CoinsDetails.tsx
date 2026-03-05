@@ -1,6 +1,4 @@
-import { useMemo, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
 import {
     Container,
     Box,
@@ -16,108 +14,15 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import { ArrowBack, TrendingUp, TrendingDown } from "@mui/icons-material";
-import { AppState } from "../../../Redux/AppState";
 import { PriceFormatter } from "../../../Utils/PriceFormatter";
-import { CoinsModel } from "../../../Models/CoinsModel";
-import { CoinGeckoCoinDetailsResponse } from "../../../Models/ApiTypes";
-import { coinsService } from "../../../Services/CoinsService";
-
-function mapCoinDetailsResponseToModel(
-    response: CoinGeckoCoinDetailsResponse,
-    id: string
-): CoinsModel {
-    const md = response.market_data;
-    const num = (v: number | { usd?: number } | undefined): number | undefined =>
-        typeof v === "number" ? v : v?.usd;
-    return {
-        id: response.id ?? id,
-        symbol: response.symbol,
-        name: response.name,
-        image: response.image?.large ?? response.image?.small ?? response.image?.thumb,
-        current_price: md?.current_price?.usd,
-        market_cap: md?.market_cap?.usd ?? (md as { market_cap?: number })?.market_cap,
-        market_cap_rank: response.market_cap_rank ?? (md as { market_cap_rank?: number })?.market_cap_rank,
-        fully_diluted_valuation: (md as { fully_diluted_valuation?: { usd?: number } })?.fully_diluted_valuation?.usd,
-        total_volume: md?.total_volume?.usd,
-        high_24h: num((md as { high_24h?: number | { usd?: number } })?.high_24h),
-        low_24h: num((md as { low_24h?: number | { usd?: number } })?.low_24h),
-        price_change_24h: md?.price_change_24h,
-        price_change_percentage_24h: md?.price_change_percentage_24h,
-        market_cap_change_24h: md?.market_cap_change_24h,
-        market_cap_change_percentage_24h: md?.market_cap_change_percentage_24h,
-        circulating_supply: md?.circulating_supply,
-        total_supply: md?.total_supply ?? undefined,
-        max_supply: md?.max_supply ?? undefined,
-        ath: num((md as { ath?: number | { usd?: number } })?.ath),
-        ath_change_percentage: typeof (md as { ath_change_percentage?: number })?.ath_change_percentage === "number"
-            ? (md as { ath_change_percentage: number }).ath_change_percentage
-            : (md as { ath_change_percentage?: { usd?: number } })?.ath_change_percentage?.usd,
-        ath_date: typeof (md as { ath_date?: string })?.ath_date === "string"
-            ? (md as { ath_date: string }).ath_date
-            : (md as { ath_date?: { usd?: string } })?.ath_date?.usd,
-        atl: num((md as { atl?: number | { usd?: number } })?.atl),
-        atl_change_percentage: typeof (md as { atl_change_percentage?: number })?.atl_change_percentage === "number"
-            ? (md as { atl_change_percentage: number }).atl_change_percentage
-            : (md as { atl_change_percentage?: { usd?: number } })?.atl_change_percentage?.usd,
-        atl_date: typeof (md as { atl_date?: string })?.atl_date === "string"
-            ? (md as { atl_date: string }).atl_date
-            : (md as { atl_date?: { usd?: string } })?.atl_date?.usd,
-        last_updated: response.last_updated ?? md?.last_updated,
-    };
-}
+import { useCoinDetails } from "../../../Hooks/useCoinDetails";
 
 export function CoinsDetails() {
     const params = useParams<{ coinId?: string }>();
     const navigate = useNavigate();
     const coinId = params.coinId;
 
-    const allCoins = useSelector((state: AppState) => state.coins);
-
-    const [detailCoin, setDetailCoin] = useState<CoinsModel | null>(null);
-    const [loadingDetail, setLoadingDetail] = useState(false);
-    const [errorDetail, setErrorDetail] = useState<string | null>(null);
-
-    const coin = useMemo(() => {
-        if (!coinId) return undefined;
-        return allCoins.find(c => c.id === coinId);
-    }, [coinId, allCoins]);
-
-    const displayCoin = coin ?? detailCoin;
-
-    useEffect(() => {
-        if (!coinId || coin || detailCoin?.id === coinId) {
-            return;
-        }
-        let cancelled = false;
-        setLoadingDetail(true);
-        setErrorDetail(null);
-        coinsService
-            .getCoinDetailsWithMarketData(coinId)
-            .then((response) => {
-                if (cancelled) return;
-                if (response) {
-                    setDetailCoin(mapCoinDetailsResponseToModel(response, coinId));
-                    setErrorDetail(null);
-                } else {
-                    setErrorDetail("Failed to load coin");
-                    setDetailCoin(null);
-                }
-            })
-            .catch(() => {
-                if (!cancelled) {
-                    setErrorDetail("Failed to load coin");
-                    setDetailCoin(null);
-                }
-            })
-            .finally(() => {
-                if (!cancelled) setLoadingDetail(false);
-            });
-        return () => {
-            cancelled = true;
-            setDetailCoin(null);
-            setErrorDetail(null);
-        };
-    }, [coinId, coin, detailCoin?.id]);
+    const { coin: displayCoin, loading: loadingDetail, error: errorDetail } = useCoinDetails(coinId);
 
     const formatPrice = (value: number | undefined | null): string => {
         if (value === undefined || value === null) return "N/A";

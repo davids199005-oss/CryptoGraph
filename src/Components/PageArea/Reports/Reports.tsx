@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Legend, ResponsiveContainer } from "recharts";
 import {
@@ -14,233 +14,25 @@ import {
 import Grid from "@mui/material/Grid2";
 import { TrendingUp, TrendingDown } from "@mui/icons-material";
 import { AppState } from "../../../Redux/AppState";
-import { CoinsModel } from "../../../Models/CoinsModel";
-import { coinsService } from "../../../Services/CoinsService";
 import { PriceFormatter } from "../../../Utils/PriceFormatter";
-
-type OhlcCandle = {
-    open: number;
-    high: number;
-    low: number;
-    close: number;
-};
-
-type PriceDataPoint = {
-    time: string;
-    timestamp?: number;
-    [coinId: string]: string | number | OhlcCandle | undefined;
-};
-
-type ChartDataPoint = {
-    time: string;
-    [coinName: string]: string | number;
-};
-
-type CoinReport = {
-    coin: CoinsModel;
-    currentPrice: number;
-    previousPrice: number;
-    priceChange: number;
-    priceChangePercent: number;
-};
-
-const REFRESH_INTERVAL_MS = 10 * 1000; // 10 seconds
+import { useReportsData } from "../../../Hooks/useReportsData";
 
 export function Reports() {
     const allCoins = useSelector((state: AppState) => state.coins);
     const selectedCoinIds = useSelector((state: AppState) => state.selectedCoins);
 
-    const [priceHistory, setPriceHistory] = useState<PriceDataPoint[]>([]);
-    const [coinReports, setCoinReports] = useState<CoinReport[]>([]);
-    const [loading, setLoading] = useState<boolean>(false);
-    const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
-
     const selectedCoins = useMemo(() => {
         return allCoins.filter(coin => coin.id && selectedCoinIds.includes(coin.id));
     }, [allCoins, selectedCoinIds]);
 
-    useEffect(() => {
-        if (selectedCoinIds.length === 0) {
-            setPriceHistory([]);
-            setCoinReports([]);
-            return;
-        }
-
-        let isCancelled = false;
-
-        async function fetchPrices() {
-            setLoading(true);
-            try {
-                // Prepare coins data with id and symbol for CryptoCompare API
-                const coinsForApi = selectedCoins
-                    .filter(coin => coin.id && coin.symbol)
-                    .map(coin => ({ id: coin.id!, symbol: coin.symbol! }));
-
-                if (coinsForApi.length === 0) {
-                    setLoading(false);
-                    return;
-                }
-
-                // Single API request to CryptoCompare for all selected coins
-                const pricesMap = await coinsService.getMultipleCoinsPricesBySymbols(coinsForApi);
-
-                if (isCancelled) return;
-
-                const now = new Date();
-                const timeString = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-                const timestamp = Math.floor(now.getTime() / 1000);
-
-                // Update price history with OHLC data and calculate reports
-                setPriceHistory(prev => {
-                    const previousDataPoint = prev[prev.length - 1];
-                    const newDataPoint: PriceDataPoint = { time: timeString, timestamp };
-
-                    selectedCoins.forEach(coin => {
-                        if (!coin.id) return;
-
-                        const currentPrice = pricesMap.get(coin.id);
-                        if (currentPrice === undefined) return;
-
-                        const previousPrice = previousDataPoint?.[coin.id];
-                        let candle: OhlcCandle;
-
-                        if (previousPrice && typeof previousPrice === "object" && "close" in previousPrice) {
-                            // Use previous close as open
-                            const open = previousPrice.close;
-                            const close = currentPrice;
-                            const high = Math.max(open, close) * 1.002;
-                            const low = Math.min(open, close) * 0.998;
-                            candle = { open, high, low, close };
-                        } else if (typeof previousPrice === "number") {
-                            // Legacy format - previous price was a number
-                            const open = previousPrice;
-                            const close = currentPrice;
-                            const high = Math.max(open, close) * 1.002;
-                            const low = Math.min(open, close) * 0.998;
-                            candle = { open, high, low, close };
-                        } else {
-                            // First candle - use current price for all
-                            candle = {
-                                open: currentPrice,
-                                high: currentPrice * 1.002,
-                                low: currentPrice * 0.998,
-                                close: currentPrice
-                            };
-                        }
-
-                        newDataPoint[coin.id] = candle;
-                    });
-
-                    const updated = [...prev, newDataPoint];
-                    const newHistory = updated.slice(-30);
-
-                    // Calculate reports based on previous and current data points
-                    const reports: CoinReport[] = selectedCoins
-                        .filter(coin => coin.id)
-                        .map(coin => {
-                            const currentPrice = pricesMap.get(coin.id!) || 0;
-                            const previousData = previousDataPoint?.[coin.id!];
-                            let previousPrice: number;
-
-                            if (previousData && typeof previousData === "object" && "close" in previousData) {
-                                previousPrice = previousData.close;
-                            } else if (typeof previousData === "number") {
-                                previousPrice = previousData;
-                            } else {
-                                previousPrice = currentPrice;
-                            }
-
-                            const priceChange = currentPrice - previousPrice;
-                            const priceChangePercent = previousPrice > 0 ? (priceChange / previousPrice) * 100 : 0;
-
-                            return {
-                                coin,
-                                currentPrice,
-                                previousPrice,
-                                priceChange,
-                                priceChangePercent,
-                            };
-                        });
-
-                    // Update reports state (this is safe as it's in a state updater function)
-                    setCoinReports(reports);
-
-                    return newHistory;
-                });
-
-                setLastUpdated(now);
-            } catch (error) {
-                console.error("Error fetching coin prices:", error);
-                // Set error state or show user-friendly message
-            } finally {
-                if (!isCancelled) {
-                    setLoading(false);
-                }
-            }
-        }
-
-        // Initial fetch
-        fetchPrices();
-
-        // Set up interval for auto-refresh
-        const intervalId = window.setInterval(fetchPrices, REFRESH_INTERVAL_MS);
-
-        return () => {
-            isCancelled = true;
-            window.clearInterval(intervalId);
-        };
-    }, [selectedCoinIds, selectedCoins]);
-
-    const chartColors = useMemo(() => [
-        "#00f5ff",      // Neon cyan
-        "#ff00aa",      // Neon magenta
-        "#00ff88",      // Neon green
-        "#ff3366",      // Neon red
-        "#ffaa00",      // Amber
-        "#8b5cf6",      // Purple
-        "#06b6d4",      // Cyan
-        "#ec4899",      // Pink
-        "#84cc16",      // Lime
-        "#6366f1",      // Indigo
-    ], []);
-
-
-    // Transform price history to recharts format
-    const chartData = useMemo(() => {
-        if (priceHistory.length === 0 || selectedCoins.length === 0) {
-            return [];
-        }
-
-        return priceHistory.map(point => {
-            const dataPoint: ChartDataPoint = {
-                time: point.time
-            };
-
-            selectedCoins.forEach(coin => {
-                if (coin.id && coin.symbol) {
-                    const coinData = point[coin.id];
-                    let price: number | undefined;
-
-                    // Extract price from OHLC candle or use direct price
-                    if (coinData && typeof coinData === "object" && "close" in coinData) {
-                        price = coinData.close;
-                    } else if (typeof coinData === "number") {
-                        price = coinData;
-                    }
-
-                    if (price !== undefined) {
-                        // Use symbol as key for the chart
-                        dataPoint[coin.symbol.toUpperCase()] = price;
-                    }
-                }
-            });
-
-            return dataPoint;
-        }).filter(point => {
-            // Filter out points with no data
-            return Object.keys(point).length > 1; // More than just "time"
-        });
-    }, [priceHistory, selectedCoins]);
+    const {
+        coinReports,
+        loading,
+        lastUpdated,
+        chartData,
+        chartColors,
+        selectedCoins: selectedCoinsFromHook,
+    } = useReportsData(selectedCoinIds, selectedCoins);
 
     if (selectedCoinIds.length === 0) {
         return (
@@ -283,7 +75,6 @@ export function Reports() {
                     </Stack>
                 </Box>
 
-                {/* Line Chart */}
                 <Card sx={{ mb: 4 }}>
                     <CardContent>
                         <Typography variant="h4" gutterBottom>
@@ -305,7 +96,7 @@ export function Reports() {
                                             domain={['auto', 'auto']}
                                         />
                                         <Legend />
-                                        {selectedCoins.map((coin, index) => {
+                                        {selectedCoinsFromHook.map((coin, index) => {
                                             if (!coin.symbol) return null;
                                             const color = chartColors[index % chartColors.length];
                                             return (
@@ -333,7 +124,6 @@ export function Reports() {
                     </CardContent>
                 </Card>
 
-                {/* Coin Reports */}
                 <Box sx={{ mb: 4 }}>
                     <Typography variant="h4" gutterBottom>
                         Coins Reports

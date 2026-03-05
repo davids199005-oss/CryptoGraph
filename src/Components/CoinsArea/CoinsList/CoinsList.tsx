@@ -22,6 +22,7 @@ export function CoinsList() {
 	const coinsFromStore = useSelector((state: AppState) => state.coins);
 	const searchQuery = useSelector((state: AppState) => state.searchQuery);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const [loadError, setLoadError] = useState<string | null>(null);
 
 	useEffect(() => {
 		// If coins are already in store, don't fetch again (caching optimization)
@@ -31,13 +32,18 @@ export function CoinsList() {
 
 		let isMounted = true;
 		setIsLoading(true);
+		setLoadError(null);
 		coinsService.getCoinsList()
 			.then((coins: CoinsModel[]) => {
 				if (!isMounted) return;
 				dispatch(coinsSlice.actions.initCoins(coins));
+				setLoadError(null);
 			})
 			.catch((err: Error) => {
 				console.error("Error loading coins:", err);
+				if (isMounted) {
+					setLoadError("Failed to load coins. Please try again.");
+				}
 			})
 			.finally(() => {
 				if (isMounted) {
@@ -85,14 +91,24 @@ export function CoinsList() {
 	const STAGGER_DELAY_MS = 50;
 	const STAGGER_MAX_DELAY_MS = 300;
 
-	// Empty state when no coins loaded
+	// Empty state when no coins loaded (error or no data)
 	if (coinsFromStore.length === 0 && !isLoading) {
 		return (
 			<Box sx={{ textAlign: 'center', py: 10 }}>
-				<Inbox sx={{ fontSize: 64, color: 'text.secondary', mb: 2, opacity: 0.7 }} />
-				<Typography variant="h6" color="text.secondary">
-					No coins available
-				</Typography>
+				{loadError ? (
+					<>
+						<Typography variant="h6" color="error" sx={{ mb: 2 }}>
+							{loadError}
+						</Typography>
+					</>
+				) : (
+					<>
+						<Inbox sx={{ fontSize: 64, color: 'text.secondary', mb: 2, opacity: 0.7 }} />
+						<Typography variant="h6" color="text.secondary">
+							No coins available
+						</Typography>
+					</>
+				)}
 			</Box>
 		);
 	}
