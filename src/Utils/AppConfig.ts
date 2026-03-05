@@ -41,7 +41,7 @@ class AppConfig {
      * Override via VITE_OPENAI_MODEL in .env if needed.
      */
     public readonly OpenAIRecommendationModel =
-        (import.meta.env.VITE_OPENAI_MODEL as string | undefined) ?? "gpt-4o";
+        (import.meta.env.VITE_OPENAI_MODEL as string | undefined) ?? "gpt-5-mini";
 
     /**
      * OpenAI API key loaded from environment variable
