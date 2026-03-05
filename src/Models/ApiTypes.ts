@@ -21,11 +21,28 @@ export interface CoinGeckoMarketData {
 		eur?: number;
 		ils?: number;
 	};
+	market_cap_rank?: number;
 	total_volume?: {
 		usd?: number;
 		eur?: number;
 		ils?: number;
 	};
+	high_24h?: { usd?: number };
+	low_24h?: { usd?: number };
+	price_change_24h?: number;
+	price_change_percentage_24h?: number;
+	market_cap_change_24h?: number;
+	market_cap_change_percentage_24h?: number;
+	circulating_supply?: number;
+	total_supply?: number | null;
+	max_supply?: number | null;
+	ath?: { usd?: number };
+	ath_change_percentage?: { usd?: number };
+	ath_date?: { usd?: string };
+	atl?: { usd?: number };
+	atl_change_percentage?: { usd?: number };
+	atl_date?: { usd?: string };
+	last_updated?: string;
 	price_change_percentage_30d_in_currency?: {
 		usd?: number;
 		eur?: number;
@@ -43,11 +60,20 @@ export interface CoinGeckoMarketData {
 	};
 }
 
+export interface CoinGeckoCoinDetailsImage {
+	thumb?: string;
+	small?: string;
+	large?: string;
+}
+
 export interface CoinGeckoCoinDetailsResponse {
 	id: string;
 	name: string;
 	symbol: string;
+	image?: CoinGeckoCoinDetailsImage;
 	market_data?: CoinGeckoMarketData;
+	market_cap_rank?: number;
+	last_updated?: string;
 	[key: string]: unknown;
 }
 

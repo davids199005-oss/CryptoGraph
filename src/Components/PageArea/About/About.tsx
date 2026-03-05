@@ -157,7 +157,7 @@ export function About() {
 									alignItems={{ xs: 'center', md: 'flex-start' }}
 								>
 									<Avatar
-										src="/Images/my pitcure.png"
+										src="/Images/my-picture.png"
 										alt="David Veryutin"
 										sx={{
 											width: 200,

@@ -17,16 +17,16 @@ import { AppState } from "../../../Redux/AppState";
 import { selectedCoinsSliceActions } from "../../../Redux/CoinsSlice";
 
 /**
- * RemoveCoinModel Dialog Component
+ * RemoveCoinModal Dialog Component
  * Displayed when user tries to select more than 5 coins
  * Allows user to remove one of their currently selected coins to make room
  */
-type RemoveCoinModelProps = {
+type RemoveCoinModalProps = {
     onClose: () => void;
     onCoinRemoved?: () => void;
 };
 
-export function RemoveCoinModel(props: RemoveCoinModelProps) {
+export function RemoveCoinModal(props: RemoveCoinModalProps) {
     const dispatch = useDispatch();
     const selectedCoinIds = useSelector((state: AppState) => state.selectedCoins);
     const allCoins = useSelector((state: AppState) => state.coins);

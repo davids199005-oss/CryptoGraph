@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import {
@@ -12,11 +12,59 @@ import {
     Avatar,
     Divider,
     Stack,
+    CircularProgress,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import { ArrowBack, TrendingUp, TrendingDown } from "@mui/icons-material";
 import { AppState } from "../../../Redux/AppState";
 import { PriceFormatter } from "../../../Utils/PriceFormatter";
+import { CoinsModel } from "../../../Models/CoinsModel";
+import { CoinGeckoCoinDetailsResponse } from "../../../Models/ApiTypes";
+import { coinsService } from "../../../Services/CoinsService";
+
+function mapCoinDetailsResponseToModel(
+    response: CoinGeckoCoinDetailsResponse,
+    id: string
+): CoinsModel {
+    const md = response.market_data;
+    const num = (v: number | { usd?: number } | undefined): number | undefined =>
+        typeof v === "number" ? v : v?.usd;
+    return {
+        id: response.id ?? id,
+        symbol: response.symbol,
+        name: response.name,
+        image: response.image?.large ?? response.image?.small ?? response.image?.thumb,
+        current_price: md?.current_price?.usd,
+        market_cap: md?.market_cap?.usd ?? (md as { market_cap?: number })?.market_cap,
+        market_cap_rank: response.market_cap_rank ?? (md as { market_cap_rank?: number })?.market_cap_rank,
+        fully_diluted_valuation: (md as { fully_diluted_valuation?: { usd?: number } })?.fully_diluted_valuation?.usd,
+        total_volume: md?.total_volume?.usd,
+        high_24h: num((md as { high_24h?: number | { usd?: number } })?.high_24h),
+        low_24h: num((md as { low_24h?: number | { usd?: number } })?.low_24h),
+        price_change_24h: md?.price_change_24h,
+        price_change_percentage_24h: md?.price_change_percentage_24h,
+        market_cap_change_24h: md?.market_cap_change_24h,
+        market_cap_change_percentage_24h: md?.market_cap_change_percentage_24h,
+        circulating_supply: md?.circulating_supply,
+        total_supply: md?.total_supply ?? undefined,
+        max_supply: md?.max_supply ?? undefined,
+        ath: num((md as { ath?: number | { usd?: number } })?.ath),
+        ath_change_percentage: typeof (md as { ath_change_percentage?: number })?.ath_change_percentage === "number"
+            ? (md as { ath_change_percentage: number }).ath_change_percentage
+            : (md as { ath_change_percentage?: { usd?: number } })?.ath_change_percentage?.usd,
+        ath_date: typeof (md as { ath_date?: string })?.ath_date === "string"
+            ? (md as { ath_date: string }).ath_date
+            : (md as { ath_date?: { usd?: string } })?.ath_date?.usd,
+        atl: num((md as { atl?: number | { usd?: number } })?.atl),
+        atl_change_percentage: typeof (md as { atl_change_percentage?: number })?.atl_change_percentage === "number"
+            ? (md as { atl_change_percentage: number }).atl_change_percentage
+            : (md as { atl_change_percentage?: { usd?: number } })?.atl_change_percentage?.usd,
+        atl_date: typeof (md as { atl_date?: string })?.atl_date === "string"
+            ? (md as { atl_date: string }).atl_date
+            : (md as { atl_date?: { usd?: string } })?.atl_date?.usd,
+        last_updated: response.last_updated ?? md?.last_updated,
+    };
+}
 
 export function CoinsDetails() {
     const params = useParams<{ coinId?: string }>();
@@ -25,10 +73,51 @@ export function CoinsDetails() {
 
     const allCoins = useSelector((state: AppState) => state.coins);
 
+    const [detailCoin, setDetailCoin] = useState<CoinsModel | null>(null);
+    const [loadingDetail, setLoadingDetail] = useState(false);
+    const [errorDetail, setErrorDetail] = useState<string | null>(null);
+
     const coin = useMemo(() => {
         if (!coinId) return undefined;
         return allCoins.find(c => c.id === coinId);
     }, [coinId, allCoins]);
+
+    const displayCoin = coin ?? detailCoin;
+
+    useEffect(() => {
+        if (!coinId || coin || detailCoin?.id === coinId) {
+            return;
+        }
+        let cancelled = false;
+        setLoadingDetail(true);
+        setErrorDetail(null);
+        coinsService
+            .getCoinDetailsWithMarketData(coinId)
+            .then((response) => {
+                if (cancelled) return;
+                if (response) {
+                    setDetailCoin(mapCoinDetailsResponseToModel(response, coinId));
+                    setErrorDetail(null);
+                } else {
+                    setErrorDetail("Failed to load coin");
+                    setDetailCoin(null);
+                }
+            })
+            .catch(() => {
+                if (!cancelled) {
+                    setErrorDetail("Failed to load coin");
+                    setDetailCoin(null);
+                }
+            })
+            .finally(() => {
+                if (!cancelled) setLoadingDetail(false);
+            });
+        return () => {
+            cancelled = true;
+            setDetailCoin(null);
+            setErrorDetail(null);
+        };
+    }, [coinId, coin, detailCoin?.id]);
 
     const formatPrice = (value: number | undefined | null): string => {
         if (value === undefined || value === null) return "N/A";
@@ -64,12 +153,37 @@ export function CoinsDetails() {
         );
     }
 
-    if (!coin) {
+    if (loadingDetail && !displayCoin) {
         return (
             <Container maxWidth="lg" sx={{ py: 8 }}>
                 <Card>
-                    <CardContent sx={{ textAlign: 'center', py: 8 }}>
-                        <Typography variant="h5" gutterBottom>Coin not found: {coinId}</Typography>
+                    <CardContent sx={{ textAlign: "center", py: 8 }}>
+                        <CircularProgress size={48} sx={{ mb: 2 }} />
+                        <Typography variant="h6" color="text.secondary">
+                            Loading coin details...
+                        </Typography>
+                        <Button
+                            variant="outlined"
+                            startIcon={<ArrowBack />}
+                            onClick={() => navigate("/Home")}
+                            sx={{ mt: 3 }}
+                        >
+                            Back to Home
+                        </Button>
+                    </CardContent>
+                </Card>
+            </Container>
+        );
+    }
+
+    if (errorDetail && !displayCoin) {
+        return (
+            <Container maxWidth="lg" sx={{ py: 8 }}>
+                <Card>
+                    <CardContent sx={{ textAlign: "center", py: 8 }}>
+                        <Typography variant="h5" gutterBottom>
+                            {errorDetail}
+                        </Typography>
                         <Button
                             variant="contained"
                             startIcon={<ArrowBack />}
@@ -84,7 +198,11 @@ export function CoinsDetails() {
         );
     }
 
-    const priceChange24h = coin.price_change_percentage_24h || 0;
+    if (!displayCoin) {
+        return null;
+    }
+
+    const priceChange24h = displayCoin.price_change_percentage_24h || 0;
     const isPositive = priceChange24h >= 0;
 
     return (
@@ -116,23 +234,23 @@ export function CoinsDetails() {
                     <CardContent sx={{ p: 4 }}>
                         <Stack direction="row" spacing={3} alignItems="center" sx={{ mb: 4 }}>
                             <Avatar
-                                src={coin.image}
-                                alt={coin.name}
+                                src={displayCoin.image}
+                                alt={displayCoin.name}
                                 sx={{ width: 80, height: 80 }}
                             />
                             <Box>
                                 <Typography variant="h3" component="h1" gutterBottom>
-                                    {coin.name}
+                                    {displayCoin.name}
                                 </Typography>
                                 <Stack direction="row" spacing={2} alignItems="center">
                                     <Chip
-                                        label={coin.symbol?.toUpperCase()}
+                                        label={displayCoin.symbol?.toUpperCase()}
                                         color="primary"
                                         size="small"
                                     />
-                                    {coin.market_cap_rank && (
+                                    {displayCoin.market_cap_rank && (
                                         <Chip
-                                            label={`Rank #${coin.market_cap_rank}`}
+                                            label={`Rank #${displayCoin.market_cap_rank}`}
                                             variant="outlined"
                                             size="small"
                                         />
@@ -149,25 +267,25 @@ export function CoinsDetails() {
                             </Typography>
                             <Grid container spacing={2}>
                                 <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-                                    <InfoCard label="Name" value={coin.name} />
+                                    <InfoCard label="Name" value={displayCoin.name} />
                                 </Grid>
                                 <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-                                    <InfoCard label="Symbol" value={coin.symbol?.toUpperCase()} />
+                                    <InfoCard label="Symbol" value={displayCoin.symbol?.toUpperCase()} />
                                 </Grid>
                                 <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-                                    <InfoCard label="ID" value={coin.id} />
+                                    <InfoCard label="ID" value={displayCoin.id} />
                                 </Grid>
                                 <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                                     <InfoCard
                                         label="Market Cap Rank"
-                                        value={coin.market_cap_rank ? `#${coin.market_cap_rank}` : "N/A"}
+                                        value={displayCoin.market_cap_rank ? `#${displayCoin.market_cap_rank}` : "N/A"}
                                     />
                                 </Grid>
-                                {coin.last_updated && (
+                                {displayCoin.last_updated && (
                                     <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                                         <InfoCard
                                             label="Last Updated"
-                                            value={formatDate(coin.last_updated)}
+                                            value={formatDate(displayCoin.last_updated)}
                                         />
                                     </Grid>
                                 )}
@@ -184,27 +302,27 @@ export function CoinsDetails() {
                                 <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                                     <InfoCard
                                         label="Current Price (USD)"
-                                        value={formatPrice(coin.current_price)}
+                                        value={formatPrice(displayCoin.current_price)}
                                         highlight
                                     />
                                 </Grid>
                                 <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-                                    <InfoCard label="Market Cap" value={formatPrice(coin.market_cap)} />
+                                    <InfoCard label="Market Cap" value={formatPrice(displayCoin.market_cap)} />
                                 </Grid>
                                 <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                                     <InfoCard
                                         label="Fully Diluted Valuation"
-                                        value={formatPrice(coin.fully_diluted_valuation)}
+                                        value={formatPrice(displayCoin.fully_diluted_valuation)}
                                     />
                                 </Grid>
                                 <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-                                    <InfoCard label="Total Volume" value={formatPrice(coin.total_volume)} />
+                                    <InfoCard label="Total Volume" value={formatPrice(displayCoin.total_volume)} />
                                 </Grid>
                                 <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-                                    <InfoCard label="24h High" value={formatPrice(coin.high_24h)} />
+                                    <InfoCard label="24h High" value={formatPrice(displayCoin.high_24h)} />
                                 </Grid>
                                 <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-                                    <InfoCard label="24h Low" value={formatPrice(coin.low_24h)} />
+                                    <InfoCard label="24h Low" value={formatPrice(displayCoin.low_24h)} />
                                 </Grid>
                                 <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                                     <Box
@@ -230,8 +348,8 @@ export function CoinsDetails() {
                                                     color: isPositive ? '#00ff88' : '#ff3366',
                                                 }}
                                             >
-                                                {coin.price_change_24h !== undefined
-                                                    ? `${coin.price_change_24h >= 0 ? "+" : ""}${coin.price_change_24h.toFixed(2)}`
+                                                {displayCoin.price_change_24h !== undefined
+                                                    ? `${displayCoin.price_change_24h >= 0 ? "+" : ""}${displayCoin.price_change_24h.toFixed(2)}`
                                                     : "N/A"}
                                             </Typography>
                                         </Stack>
@@ -272,22 +390,22 @@ export function CoinsDetails() {
                                     <InfoCard
                                         label="Market Cap Change 24h"
                                         value={
-                                            coin.market_cap_change_24h !== undefined
-                                                ? `${coin.market_cap_change_24h >= 0 ? "+" : ""}${formatPrice(coin.market_cap_change_24h)}`
+                                            displayCoin.market_cap_change_24h !== undefined
+                                                ? `${displayCoin.market_cap_change_24h >= 0 ? "+" : ""}${formatPrice(displayCoin.market_cap_change_24h)}`
                                                 : "N/A"
                                         }
-                                        valueColor={(coin.market_cap_change_24h || 0) >= 0 ? '#00ff88' : '#ff3366'}
+                                        valueColor={(displayCoin.market_cap_change_24h || 0) >= 0 ? '#00ff88' : '#ff3366'}
                                     />
                                 </Grid>
                                 <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                                     <InfoCard
                                         label="Market Cap Change % 24h"
                                         value={
-                                            coin.market_cap_change_percentage_24h !== undefined
-                                                ? `${coin.market_cap_change_percentage_24h >= 0 ? "+" : ""}${coin.market_cap_change_percentage_24h.toFixed(2)}%`
+                                            displayCoin.market_cap_change_percentage_24h !== undefined
+                                                ? `${displayCoin.market_cap_change_percentage_24h >= 0 ? "+" : ""}${displayCoin.market_cap_change_percentage_24h.toFixed(2)}%`
                                                 : "N/A"
                                         }
-                                        valueColor={(coin.market_cap_change_percentage_24h || 0) >= 0 ? '#00ff88' : '#ff3366'}
+                                        valueColor={(displayCoin.market_cap_change_percentage_24h || 0) >= 0 ? '#00ff88' : '#ff3366'}
                                     />
                                 </Grid>
                             </Grid>
@@ -303,14 +421,14 @@ export function CoinsDetails() {
                                 <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                                     <InfoCard
                                         label="Circulating Supply"
-                                        value={formatNumber(coin.circulating_supply)}
+                                        value={formatNumber(displayCoin.circulating_supply)}
                                     />
                                 </Grid>
                                 <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-                                    <InfoCard label="Total Supply" value={formatNumber(coin.total_supply)} />
+                                    <InfoCard label="Total Supply" value={formatNumber(displayCoin.total_supply)} />
                                 </Grid>
                                 <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-                                    <InfoCard label="Max Supply" value={formatNumber(coin.max_supply)} />
+                                    <InfoCard label="Max Supply" value={formatNumber(displayCoin.max_supply)} />
                                 </Grid>
                             </Grid>
                         </Box>
@@ -323,34 +441,34 @@ export function CoinsDetails() {
                             </Typography>
                             <Grid container spacing={2}>
                                 <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-                                    <InfoCard label="All Time High" value={formatPrice(coin.ath)} />
+                                    <InfoCard label="All Time High" value={formatPrice(displayCoin.ath)} />
                                 </Grid>
-                                {coin.ath_date && (
+                                {displayCoin.ath_date && (
                                     <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-                                        <InfoCard label="ATH Date" value={formatDate(coin.ath_date)} />
+                                        <InfoCard label="ATH Date" value={formatDate(displayCoin.ath_date)} />
                                     </Grid>
                                 )}
-                                {coin.ath_change_percentage !== undefined && (
+                                {displayCoin.ath_change_percentage !== undefined && (
                                     <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                                         <InfoCard
                                             label="ATH Change %"
-                                            value={`${coin.ath_change_percentage.toFixed(2)}%`}
+                                            value={`${displayCoin.ath_change_percentage.toFixed(2)}%`}
                                         />
                                     </Grid>
                                 )}
                                 <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-                                    <InfoCard label="All Time Low" value={formatPrice(coin.atl)} />
+                                    <InfoCard label="All Time Low" value={formatPrice(displayCoin.atl)} />
                                 </Grid>
-                                {coin.atl_date && (
+                                {displayCoin.atl_date && (
                                     <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-                                        <InfoCard label="ATL Date" value={formatDate(coin.atl_date)} />
+                                        <InfoCard label="ATL Date" value={formatDate(displayCoin.atl_date)} />
                                     </Grid>
                                 )}
-                                {coin.atl_change_percentage !== undefined && (
+                                {displayCoin.atl_change_percentage !== undefined && (
                                     <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                                         <InfoCard
                                             label="ATL Change %"
-                                            value={`${coin.atl_change_percentage.toFixed(2)}%`}
+                                            value={`${displayCoin.atl_change_percentage.toFixed(2)}%`}
                                         />
                                     </Grid>
                                 )}

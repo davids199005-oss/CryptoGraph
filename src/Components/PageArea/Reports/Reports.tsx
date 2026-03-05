@@ -7,11 +7,11 @@ import {
     Box,
     Card,
     CardContent,
-    Grid,
     Chip,
     Stack,
     CircularProgress,
 } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import { TrendingUp, TrendingDown } from "@mui/icons-material";
 import { AppState } from "../../../Redux/AppState";
 import { CoinsModel } from "../../../Models/CoinsModel";
@@ -340,7 +340,7 @@ export function Reports() {
                     </Typography>
                     <Grid container spacing={3}>
                         {coinReports.map((report) => (
-                            <Grid item xs={12} sm={6} md={4} key={report.coin.id}>
+                            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={report.coin.id}>
                                 <Card sx={{ height: '100%' }}>
                                     <CardContent>
                                         <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>

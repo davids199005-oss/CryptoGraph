@@ -1,6 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { CoinsModel } from "../Models/CoinsModel";
 
+const MAX_SELECTED_COINS = 5;
+
 /**
  * Redux slice for managing the full list of coins from the API
  */
@@ -29,9 +31,13 @@ export const selectedCoinsSlice = createSlice({
          */
         toggleCoin: (currentState: string[], action: PayloadAction<string>): string[] => {
             const coinId = action.payload;
-            return currentState.includes(coinId)
-                ? currentState.filter(id => id !== coinId)
-                : [...currentState, coinId];
+            if (currentState.includes(coinId)) {
+                return currentState.filter(id => id !== coinId);
+            }
+            if (currentState.length >= MAX_SELECTED_COINS) {
+                return currentState;
+            }
+            return [...currentState, coinId];
         },
         /**
          * Remove a specific coin from selected coins

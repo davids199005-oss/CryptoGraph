@@ -17,7 +17,7 @@ import { CoinsModel } from "../../../Models/CoinsModel";
 import { coinsService } from "../../../Services/CoinsService";
 import { AppState } from "../../../Redux/AppState";
 import { selectedCoinsSliceActions } from "../../../Redux/CoinsSlice";
-import { RemoveCoinModel } from "../RemoveCoinModel/RemoveCoinModel";
+import { RemoveCoinModal } from "../RemoveCoinModal/RemoveCoinModal";
 import { PriceFormatter } from "../../../Utils/PriceFormatter";
 
 /**
@@ -135,9 +135,9 @@ export function CoinsCard(props: CoinsCardProps) {
 	}, [props.coin.id, isSelected, selectedCoinIds.length, dispatch]);
 
 	/**
-	 * Handle coin removal triggered from RemoveCoinModel modal
+	 * Handle coin removal triggered from RemoveCoinModal
 	 */
-	const handleCoinRemovedFromModel = useCallback(() => {
+	const handleCoinRemovedFromModal = useCallback(() => {
 		if (props.coin.id) {
 			dispatch(selectedCoinsSliceActions.toggleCoin(props.coin.id));
 		}
@@ -350,9 +350,9 @@ export function CoinsCard(props: CoinsCardProps) {
 
 			{/* Modal for coin removal when selection limit reached */}
 			{showModal && (
-				<RemoveCoinModel
+				<RemoveCoinModal
 					onClose={() => setShowModal(false)}
-					onCoinRemoved={handleCoinRemovedFromModel}
+					onCoinRemoved={handleCoinRemovedFromModal}
 				/>
 			)}
 		</>

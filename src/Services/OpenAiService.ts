@@ -21,11 +21,6 @@ class OpenAiService {
 	 */
 	private client: OpenAI | null = null;
 
-	/**
-	 * Preferred model for recommendations. Use a widely available model to avoid runtime failures.
-	 */
-	private readonly recommendationModel = "gpt-5";
-
 	public isConfigured(): boolean {
 		return Boolean(appConfig.OpenAIApiKey);
 	}
@@ -53,7 +48,7 @@ class OpenAiService {
      */
     public async getChatCompletions(messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[]): Promise<OpenAI.Chat.Completions.ChatCompletionMessage> {
 		const response = await this.getClient().chat.completions.create({
-			model: this.recommendationModel,
+			model: appConfig.OpenAIRecommendationModel,
 			messages: messages,
 		});
 		const message = response.choices[0]?.message;

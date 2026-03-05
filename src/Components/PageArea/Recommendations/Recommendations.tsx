@@ -6,12 +6,12 @@ import {
 	Box,
 	Card,
 	CardContent,
-	Grid,
 	CircularProgress,
 	Stack,
 	Chip,
 	Alert,
 } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import { CheckCircle, Cancel } from "@mui/icons-material";
 import { AppState } from "../../../Redux/AppState";
 import { CoinsModel } from "../../../Models/CoinsModel";
@@ -176,7 +176,7 @@ export function Recommendations() {
 
 				<Grid container spacing={3}>
 					{recommendations.map((rec) => (
-						<Grid item xs={12} sm={6} md={4} key={rec.coin.id}>
+						<Grid size={{ xs: 12, sm: 6, md: 4 }} key={rec.coin.id}>
 							<Card
 								sx={{
 									height: '100%',

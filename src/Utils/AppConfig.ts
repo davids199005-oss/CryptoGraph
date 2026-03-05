@@ -37,6 +37,13 @@ class AppConfig {
         public readonly OpenAiApi = "https://api.openai.com/v1/chat/completions";
 
     /**
+     * OpenAI model for recommendations (e.g. gpt-4o).
+     * Override via VITE_OPENAI_MODEL in .env if needed.
+     */
+    public readonly OpenAIRecommendationModel =
+        (import.meta.env.VITE_OPENAI_MODEL as string | undefined) ?? "gpt-4o";
+
+    /**
      * OpenAI API key loaded from environment variable
      * Must be set in .env as VITE_OPENAI_API_KEY
      */
