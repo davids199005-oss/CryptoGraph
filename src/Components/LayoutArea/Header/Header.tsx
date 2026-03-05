@@ -75,7 +75,7 @@ export function Header() {
                     playsInline
                     style={{ display: 'block' }}
                 >
-                    <source src="/Images/animatedHeader.mp4" type="video/mp4" />
+                    <source src={`${import.meta.env.BASE_URL}Images/animatedHeader.mp4`} type="video/mp4" />
                 </video>
             </Box>
 

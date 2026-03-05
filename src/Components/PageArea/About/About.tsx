@@ -160,7 +160,7 @@ export function About() {
 									alignItems={{ xs: 'center', md: 'flex-start' }}
 								>
 									<Avatar
-										src="/Images/my-picture.png"
+										src={`${import.meta.env.BASE_URL}Images/my-picture.png`}
 										alt="David Veryutin"
 										sx={{
 											width: 200,
