@@ -7,8 +7,8 @@ import { NotFoundPage } from "../../PageArea/NotFoundPage/NotFoundPage";
 import { CoinsDetails } from "../../CoinsArea/CoinsDetails/CoinsDetails";
 
 /**
- * Application routing configuration
- * Maps URL paths to components
+ * Application routing configuration. Maps URL paths to page components;
+ * root path redirects to /Home, unknown paths render NotFoundPage.
  */
 export function Routing() {
     return (

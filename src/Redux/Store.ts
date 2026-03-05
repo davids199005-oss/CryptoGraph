@@ -6,9 +6,8 @@ import { loadSelectedCoinsFromStorage } from "../Utils/LocalStorageUtils";
 import { persistSelectedCoinsMiddleware } from "./middleware/persistSelectedCoinsMiddleware";
 
 /**
- * Initialize Redux store with persistence
- * - Loads previously selected coins from localStorage
- * - Middleware persists selected coins to localStorage on every state change
+ * Redux store: coins list, selected coin IDs, and search query. Preloads selected coins
+ * from localStorage; persistSelectedCoinsMiddleware writes them back on each change.
  */
 const preloadedState: AppState = {
     coins: [],

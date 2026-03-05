@@ -1,3 +1,7 @@
+/**
+ * Coin details page: full market data, supply, and ATH/ATL for a single coin.
+ * Data is loaded from the store or fetched by ID via useCoinDetails; supports direct URL access.
+ */
 import { useNavigate, useParams } from "react-router-dom";
 import {
     Container,
@@ -386,6 +390,7 @@ export function CoinsDetails() {
     );
 }
 
+/** Reusable label-value block for the details page (e.g. Market Cap, ATH). */
 function InfoCard({
     label,
     value,

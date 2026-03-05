@@ -17,9 +17,8 @@ import { AppState } from "../../../Redux/AppState";
 import { selectedCoinsSliceActions } from "../../../Redux/CoinsSlice";
 
 /**
- * RemoveCoinModal Dialog Component
- * Displayed when user tries to select more than 5 coins
- * Allows user to remove one of their currently selected coins to make room
+ * Modal shown when the user tries to select a sixth coin. Lists currently selected coins
+ * so the user can remove one to free a slot; calls onCoinRemoved after a removal.
  */
 type RemoveCoinModalProps = {
     onClose: () => void;

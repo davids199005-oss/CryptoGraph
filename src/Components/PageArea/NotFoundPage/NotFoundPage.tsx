@@ -1,3 +1,6 @@
+/**
+ * 404 page: shown for unknown routes. Offers a button to navigate back to Home.
+ */
 import { Box, Container, Typography, Button } from "@mui/material";
 import { Home, SearchOff } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";

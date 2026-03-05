@@ -1,8 +1,13 @@
+/**
+ * Hook that fetches AI buy/do-not-buy recommendations for each selected coin
+ * via OpenAI. Handles missing API key, loading state, and per-coin errors.
+ */
 import { useEffect, useState } from "react";
 import { CoinsModel } from "../Models/CoinsModel";
 import { coinsService } from "../Services/CoinsService";
 import { openAiService } from "../Services/OpenAiService";
 
+/** Single recommendation result for the Recommendations page. */
 export type Recommendation = {
     coin: CoinsModel;
     recommendation: "buy" | "do not buy";

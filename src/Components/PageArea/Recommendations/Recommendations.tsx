@@ -1,3 +1,7 @@
+/**
+ * Recommendations page: AI buy/do-not-buy recommendations for selected coins.
+ * Shows an alert when VITE_OPENAI_API_KEY is missing; otherwise uses useRecommendations.
+ */
 import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import {

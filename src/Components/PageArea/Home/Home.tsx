@@ -1,3 +1,6 @@
+/**
+ * Home page: market overview with title and the main coins list (searchable, selectable).
+ */
 import { Container, Typography, Box } from "@mui/material";
 import { CoinsList } from "../../CoinsArea/CoinsList/CoinsList";
 

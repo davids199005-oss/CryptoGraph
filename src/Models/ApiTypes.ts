@@ -1,5 +1,6 @@
 /**
- * Types for CoinGecko API responses
+ * Types for external API responses: CoinGecko (prices, details, market data)
+ * and CryptoCompare (multi-symbol prices). Also app-level DTOs for prices and recommendations.
  */
 
 export interface CoinGeckoPriceResponse {
@@ -83,12 +84,14 @@ export interface CryptoComparePriceResponse {
 	};
 }
 
+/** Normalized price data for a coin in USD, EUR, and ILS. */
 export interface CoinPriceData {
 	usd: number;
 	eur: number;
 	ils: number;
 }
 
+/** Market data passed to the AI recommendation service for a single coin. */
 export interface CoinRecommendationData {
 	name: string;
 	current_price_usd: number;

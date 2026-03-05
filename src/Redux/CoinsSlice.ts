@@ -54,5 +54,5 @@ export const selectedCoinsSlice = createSlice({
     },
 });
 
-// Export actions for easy access
+/** Exported actions for selected-coins slice (toggle, remove, clear). */
 export const selectedCoinsSliceActions = selectedCoinsSlice.actions;

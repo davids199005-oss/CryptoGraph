@@ -3,7 +3,8 @@ import type { AppState } from "../AppState";
 import { saveSelectedCoinsToStorage } from "../../Utils/LocalStorageUtils";
 
 /**
- * Persists selectedCoins to localStorage after every action that might change the store.
+ * Redux middleware that writes selectedCoins to localStorage after every action,
+ * so the user's selection is restored on the next visit.
  */
 export const persistSelectedCoinsMiddleware: Middleware<object, AppState> =
     (store) => (next) => (action) => {

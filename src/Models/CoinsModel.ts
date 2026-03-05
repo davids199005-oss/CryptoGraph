@@ -1,3 +1,4 @@
+/** Domain model for a cryptocurrency: market data, ATH/ATL, supply, and identifiers. */
 export class CoinsModel {
     public readonly id?: string;
     public readonly symbol?: string;

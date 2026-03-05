@@ -1,3 +1,7 @@
+/**
+ * Application entry point. Mounts the React app with Redux, router, and MUI theme.
+ * basename="/CryptoGraph" is required for GitHub Pages deployment.
+ */
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { Provider } from 'react-redux'

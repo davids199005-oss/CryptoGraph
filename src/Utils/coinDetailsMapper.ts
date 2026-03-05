@@ -2,7 +2,8 @@ import { CoinsModel } from "../Models/CoinsModel";
 import { CoinGeckoCoinDetailsResponse } from "../Models/ApiTypes";
 
 /**
- * Maps CoinGecko coin details API response to app domain model CoinsModel.
+ * Maps a CoinGecko coin-details API response into the app domain model (CoinsModel).
+ * Handles both object and numeric shapes for price/ATH/ATL fields from the API.
  */
 export function mapCoinDetailsResponseToModel(
     response: CoinGeckoCoinDetailsResponse,

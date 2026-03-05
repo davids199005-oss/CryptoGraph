@@ -1,3 +1,7 @@
+/**
+ * Reports page: real-time line chart and report cards for selected coins.
+ * Uses useReportsData for periodic price updates (CryptoCompare) and chart data.
+ */
 import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Legend, ResponsiveContainer } from "recharts";

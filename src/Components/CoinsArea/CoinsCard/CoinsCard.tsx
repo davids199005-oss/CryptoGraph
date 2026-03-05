@@ -20,9 +20,7 @@ import { selectedCoinsSliceActions } from "../../../Redux/CoinsSlice";
 import { RemoveCoinModal } from "../RemoveCoinModal/RemoveCoinModal";
 import { PriceFormatter } from "../../../Utils/PriceFormatter";
 
-/**
- * Price data structure for display
- */
+/** Price data in USD, EUR, and ILS for the card's "Show prices" section. */
 type Prices = {
 	usd: number;
 	eur: number;
@@ -34,13 +32,8 @@ type CoinsCardProps = {
 };
 
 /**
- * CoinCard Component
- * Displays individual cryptocurrency card with:
- * - Coin info (name, symbol, image)
- * - 24h price change indicator
- * - Multi-currency price display (on demand)
- * - Selection toggle with 5-coin limit
- * - Link to detailed coin page
+ * Single cryptocurrency card: image, name, symbol, 24h change, optional multi-currency
+ * prices (USD/EUR/ILS on demand), selection switch (max 5 coins), and link to coin details.
  */
 export function CoinsCard(props: CoinsCardProps) {
 	const navigate = useNavigate();
@@ -359,9 +352,7 @@ export function CoinsCard(props: CoinsCardProps) {
 	);
 }
 
-/**
- * Helper component for displaying formatted price in a consistent style
- */
+/** Inline box that shows a single currency label and formatted price. */
 function PriceDisplayBox({ currency, symbol, price }: { currency: string; symbol: string; price: number }) {
 	return (
 		<Box

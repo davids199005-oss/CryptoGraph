@@ -5,12 +5,7 @@ import { NavBar } from "../NavBar/NavBar";
 import { Routing } from "../Routing/Routing";
 
 /**
- * Main Layout Component
- * Provides the overall application structure with:
- * - Sticky navigation bar
- * - Hero header section
- * - Dynamic page content via routing
- * - Footer
+ * Root layout: sticky nav bar, hero header, main content area (routing outlet), and footer.
  */
 export function Layout() {
 	return (

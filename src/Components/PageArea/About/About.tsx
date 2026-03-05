@@ -1,3 +1,6 @@
+/**
+ * About page: project description, feature list, and developer information.
+ */
 import {
 	Container,
 	Box,

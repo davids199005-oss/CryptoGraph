@@ -7,11 +7,8 @@ import { AppState } from "../../../Redux/AppState";
 import { searchSliceActions } from "../../../Redux/SearchSlice";
 
 /**
- * Navigation Bar Component
- * Displays navigation buttons and global search field
- * - Sticky positioning for persistent visibility
- * - Active route highlighting
- * - Real-time coin search functionality
+ * Sticky navigation bar with links (Home, Reports, Recommendations, About), active-route
+ * highlighting, and a global coin search field that filters the list on the Home page.
  */
 export function NavBar() {
 	const location = useLocation();

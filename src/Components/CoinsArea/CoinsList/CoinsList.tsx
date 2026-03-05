@@ -10,12 +10,9 @@ import { AppState } from "../../../Redux/AppState";
 import { coinsSlice } from "../../../Redux/CoinsSlice";
 
 /**
- * CoinsList Component
- * Displays a grid of cryptocurrency coins with filtering and loading states
- * - Fetches coins from API on mount (cached in Redux store to avoid re-fetching)
- * - Filters coins based on global search query
- * - Shows loading skeleton while fetching
- * - Shows error/empty states appropriately
+ * Grid of cryptocurrency cards with search filter and loading/empty states.
+ * Fetches the coins list once on mount and stores it in Redux; filters by the global
+ * search query (name or ID). Renders CoinsCard for each matching coin.
  */
 export function CoinsList() {
 	const dispatch = useDispatch();

@@ -2,9 +2,8 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { Box, Typography } from "@mui/material";
 
 /**
- * Header Component with Parallax Effect
- * Displays animated header banner with parallax scrolling effect
- * Uses passive scroll listener for improved performance
+ * Hero header with video background and parallax scroll effect. Uses a passive scroll
+ * listener so scrolling stays smooth.
  */
 export function Header() {
     const headerRef = useRef<HTMLDivElement>(null);

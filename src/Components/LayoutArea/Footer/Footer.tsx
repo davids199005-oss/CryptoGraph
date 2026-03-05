@@ -1,10 +1,7 @@
 import { Box, Container, Typography, Stack } from "@mui/material";
 import { Copyright } from "@mui/icons-material";
 
-/**
- * Footer Component
- * Displays copyright and attribution information
- */
+/** Footer with copyright, author link, and API attribution (CoinGecko). */
 export function Footer() {
     return (
         <Box

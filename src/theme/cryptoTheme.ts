@@ -1,10 +1,15 @@
 import { createTheme } from '@mui/material/styles';
 
-// Futuristic: deep space background with subtle grid feel
+/**
+ * MUI theme for CryptoGraph: dark base, neon cyan/magenta accents, and custom
+ * palette extensions (crypto.*, custom.pageBackground, glows). Used for buttons,
+ * cards, inputs, app bar, and typography (Orbitron + Rajdhani).
+ */
+/* Futuristic: deep space background with subtle grid feel */
 const pageBackgroundGradient =
 	'linear-gradient(180deg, #050810 0%, #0a0e1a 30%, #080c18 70%, #050810 100%)';
 
-// Neon colors
+/* Neon accent colors */
 const neonCyan = '#00f5ff';
 const neonCyanDim = '#00b8c4';
 const neonMagenta = '#ff00aa';

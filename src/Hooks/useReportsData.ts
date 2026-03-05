@@ -1,7 +1,13 @@
+/**
+ * Hook that fetches and refreshes price data for selected coins (CryptoCompare API),
+ * builds OHLC-style history for charts, and computes per-coin report cards.
+ * Refreshes every 10 seconds. Returns chart-ready data and colors.
+ */
 import { useEffect, useMemo, useState } from "react";
 import { CoinsModel } from "../Models/CoinsModel";
 import { coinsService } from "../Services/CoinsService";
 
+/** Single OHLC candle for a time point. */
 type OhlcCandle = {
     open: number;
     high: number;
@@ -9,17 +15,20 @@ type OhlcCandle = {
     close: number;
 };
 
+/** Raw price history point: time plus per-coin OHLC or numeric value. */
 type PriceDataPoint = {
     time: string;
     timestamp?: number;
     [coinId: string]: string | number | OhlcCandle | undefined;
 };
 
+/** Flattened point for Recharts: time plus one number per coin (by symbol). */
 type ChartDataPoint = {
     time: string;
     [coinName: string]: string | number;
 };
 
+/** Per-coin report row: current/previous price and change for the Reports page. */
 export type CoinReport = {
     coin: CoinsModel;
     currentPrice: number;
@@ -28,7 +37,8 @@ export type CoinReport = {
     priceChangePercent: number;
 };
 
-const REFRESH_INTERVAL_MS = 10 * 1000; // 10 seconds
+/** How often to refetch prices for the Reports chart (10 seconds). */
+const REFRESH_INTERVAL_MS = 10 * 1000;
 
 export type UseReportsDataResult = {
     priceHistory: PriceDataPoint[];

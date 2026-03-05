@@ -1,9 +1,10 @@
 /**
- * Utilities for working with localStorage
+ * Persists and loads the list of selected coin IDs in localStorage so selection
+ * survives page reloads. Uses a single key; returns an empty array if unavailable.
  */
-
 const SELECTED_COINS_KEY = 'cryptograph_selected_coins';
 
+/** Returns true when localStorage is defined and usable (e.g. not in SSR). */
 function isStorageAvailable(): boolean {
     try {
         return typeof localStorage !== 'undefined';
@@ -12,9 +13,7 @@ function isStorageAvailable(): boolean {
     }
 }
 
-/**
- * Saves selected coins to localStorage
- */
+/** Writes the selected coin IDs to localStorage. No-op if storage is unavailable. */
 export function saveSelectedCoinsToStorage(coinIds: string[]): void {
     if (!isStorageAvailable()) {
         return;
@@ -27,9 +26,7 @@ export function saveSelectedCoinsToStorage(coinIds: string[]): void {
     }
 }
 
-/**
- * Loads selected coins from localStorage
- */
+/** Reads the saved selected coin IDs from localStorage; returns [] if missing or invalid. */
 export function loadSelectedCoinsFromStorage(): string[] {
     if (!isStorageAvailable()) {
         return [];
@@ -50,9 +47,7 @@ export function loadSelectedCoinsFromStorage(): string[] {
     return [];
 }
 
-/**
- * Clears saved selected coins from localStorage
- */
+/** Removes the selected-coins entry from localStorage. */
 export function clearSelectedCoinsFromStorage(): void {
     if (!isStorageAvailable()) {
         return;

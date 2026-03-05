@@ -2,6 +2,8 @@
 
 **Cryptocurrency market dashboard** with real-time charts, detailed coin views, and AI-powered buy/sell recommendations.
 
+**Live:** [https://davids199005-oss.github.io/CryptoGraph/](https://davids199005-oss.github.io/CryptoGraph/)
+
 ---
 
 ## Features
@@ -88,6 +90,19 @@ npm run lint
 ```
 
 Open **http://localhost:5173** (or the port Vite prints). Default route redirects to `/Home`.
+
+### Deploy (GitHub Pages)
+
+The app is configured for GitHub Pages with base path `/CryptoGraph/`. To deploy:
+
+1. In repo **Settings → Pages** set **Source** to **Deploy from a branch**, branch **gh-pages**, folder **/ (root)**.
+2. Run:
+
+```bash
+npm run deploy
+```
+
+This builds the project and pushes the `dist` output to the `gh-pages` branch. The site will be available at `https://<username>.github.io/CryptoGraph/`.
 
 ---
 
