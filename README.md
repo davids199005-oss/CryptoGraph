@@ -116,4 +116,6 @@ This builds the project and pushes the `dist` output to the `gh-pages` branch. T
 
 ## License
 
-Private project. Data provided by CoinGecko and CryptoCompare APIs.
+MIT 
+Copyright © 2026 David Veryutin. 
+Data provided by CoinGecko and CryptoCompare APIs.
