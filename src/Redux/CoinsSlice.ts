@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { CoinsModel } from "../Models/CoinsModel";
+import { CoinsModel } from "../Models/coinsModel";
 
 const MAX_SELECTED_COINS = 5;
 

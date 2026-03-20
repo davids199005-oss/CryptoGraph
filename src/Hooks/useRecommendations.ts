@@ -3,7 +3,7 @@
  * via OpenAI. Handles missing API key, loading state, and per-coin errors.
  */
 import { useEffect, useState } from "react";
-import { CoinsModel } from "../Models/CoinsModel";
+import { CoinsModel } from "../Models/coinsModel";
 import { coinsService } from "../Services/CoinsService";
 import { openAiService } from "../Services/OpenAiService";
 
@@ -29,11 +29,10 @@ export function useRecommendations(
     const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [apiKeyMissing, setApiKeyMissing] = useState<boolean>(false);
+    const hasSelection = selectedCoinIds.length > 0;
 
     useEffect(() => {
-        if (selectedCoinIds.length === 0) {
-            setRecommendations([]);
-            setApiKeyMissing(false);
+        if (!hasSelection) {
             return;
         }
 
@@ -118,7 +117,11 @@ export function useRecommendations(
         return () => {
             isCancelled = true;
         };
-    }, [selectedCoinIds, selectedCoins]);
+    }, [hasSelection, selectedCoinIds, selectedCoins]);
 
-    return { recommendations, loading, apiKeyMissing };
+    return {
+        recommendations: hasSelection ? recommendations : [],
+        loading: hasSelection ? loading : false,
+        apiKeyMissing: hasSelection ? apiKeyMissing : false,
+    };
 }

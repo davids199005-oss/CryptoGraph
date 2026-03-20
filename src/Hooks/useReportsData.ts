@@ -4,7 +4,7 @@
  * Refreshes every 10 seconds. Returns chart-ready data and colors.
  */
 import { useEffect, useMemo, useState } from "react";
-import { CoinsModel } from "../Models/CoinsModel";
+import { CoinsModel } from "../Models/coinsModel";
 import { coinsService } from "../Services/CoinsService";
 
 /** Single OHLC candle for a time point. */

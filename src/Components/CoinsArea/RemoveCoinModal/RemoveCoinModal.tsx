@@ -1,16 +1,17 @@
 import { useDispatch, useSelector } from "react-redux";
 import {
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    Button,
-    List,
-    ListItem,
-    ListItemAvatar,
-    ListItemText,
-    Avatar,
-    Typography,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Avatar,
+  Typography,
+  useTheme,
 } from "@mui/material";
 import { Close } from "@mui/icons-material";
 import { AppState } from "../../../Redux/AppState";
@@ -21,113 +22,111 @@ import { selectedCoinsSliceActions } from "../../../Redux/CoinsSlice";
  * so the user can remove one to free a slot; calls onCoinRemoved after a removal.
  */
 type RemoveCoinModalProps = {
-    onClose: () => void;
-    onCoinRemoved?: () => void;
+  onClose: () => void;
+  onCoinRemoved?: () => void;
 };
 
 export function RemoveCoinModal(props: RemoveCoinModalProps) {
-    const dispatch = useDispatch();
-    const selectedCoinIds = useSelector((state: AppState) => state.selectedCoins);
-    const allCoins = useSelector((state: AppState) => state.coins);
+  const theme = useTheme();
+  const dispatch = useDispatch();
+  const selectedCoinIds = useSelector((state: AppState) => state.selectedCoins);
+  const allCoins = useSelector((state: AppState) => state.coins);
 
-    // Filter to show only currently selected coins
-    const selectedCoins = allCoins.filter(coin =>
-        coin.id && selectedCoinIds.includes(coin.id)
-    );
+  // Filter to show only currently selected coins
+  const selectedCoins = allCoins.filter(
+    (coin) => coin.id && selectedCoinIds.includes(coin.id),
+  );
 
-    /**
-     * Handle removal of selected coin
-     * Deselects the coin from Redux store and notifies parent component
-     */
-    const handleRemoveCoin = (coinId: string) => {
-        dispatch(selectedCoinsSliceActions.removeCoin(coinId));
-        props.onClose();
-        if (props.onCoinRemoved) {
-            props.onCoinRemoved();
-        }
-    };
+  /**
+   * Handle removal of selected coin
+   * Deselects the coin from Redux store and notifies parent component
+   */
+  const handleRemoveCoin = (coinId: string) => {
+    dispatch(selectedCoinsSliceActions.removeCoin(coinId));
+    props.onClose();
+    if (props.onCoinRemoved) {
+      props.onCoinRemoved();
+    }
+  };
 
-    return (
-        <Dialog
-            open={true}
-            onClose={props.onClose}
-            maxWidth="sm"
-            fullWidth
-            PaperProps={{
-                sx: {
-                    background: 'linear-gradient(145deg, rgba(10, 14, 26, 0.98) 0%, rgba(5, 8, 16, 0.98) 100%)',
-                    border: '1px solid rgba(0, 245, 255, 0.3)',
-                    boxShadow: '0 0 60px rgba(0, 245, 255, 0.1)',
+  return (
+    <Dialog
+      open={true}
+      onClose={props.onClose}
+      maxWidth="sm"
+      fullWidth
+      PaperProps={{
+        sx: {
+          background: theme.custom.cardGradient,
+          border: `1px solid ${theme.custom.glassBorderStrong}`,
+          boxShadow: "0 0 60px rgba(0, 245, 255, 0.1)",
+        },
+      }}
+    >
+      <DialogTitle>
+        <Typography variant="h5" component="div">
+          Select Coin to Remove
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+          You've reached the maximum of 5 coins. Please select a coin to remove:
+        </Typography>
+      </DialogTitle>
+      <DialogContent>
+        <List>
+          {selectedCoins.map((coin) => (
+            <ListItem
+              key={coin.id}
+              onClick={() => handleRemoveCoin(coin.id || "")}
+              sx={{
+                borderRadius: 2,
+                mb: 1,
+                border: "1px solid rgba(0, 245, 255, 0.25)",
+                transition: "all 0.3s ease",
+                cursor: "pointer",
+                "&:hover": {
+                  backgroundColor: "rgba(0, 245, 255, 0.08)",
+                  borderColor: "primary.main",
+                  transform: "translateX(4px)",
                 },
-            }}
+              }}
+            >
+              <ListItemAvatar>
+                <Avatar
+                  src={coin.image}
+                  alt={coin.name}
+                  sx={{ width: 48, height: 48 }}
+                />
+              </ListItemAvatar>
+              <ListItemText
+                primary={<Typography variant="h6">{coin.name}</Typography>}
+                secondary={
+                  <Typography variant="body2" color="text.secondary">
+                    {coin.symbol?.toUpperCase()}
+                  </Typography>
+                }
+              />
+            </ListItem>
+          ))}
+        </List>
+      </DialogContent>
+      <DialogActions sx={{ p: 2 }}>
+        <Button
+          onClick={props.onClose}
+          variant="outlined"
+          startIcon={<Close />}
+          fullWidth
+          sx={{
+            borderColor: "primary.main",
+            color: "primary.main",
+            "&:hover": {
+              borderColor: "primary.light",
+              backgroundColor: "rgba(0, 245, 255, 0.08)",
+            },
+          }}
         >
-            <DialogTitle>
-                <Typography variant="h5" component="div">
-                    Select Coin to Remove
-                </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                    You've reached the maximum of 5 coins. Please select a coin to remove:
-                </Typography>
-            </DialogTitle>
-            <DialogContent>
-                <List>
-                    {selectedCoins.map(coin => (
-                        <ListItem
-                            key={coin.id}
-                            onClick={() => handleRemoveCoin(coin.id || "")}
-                            sx={{
-                                borderRadius: 2,
-                                mb: 1,
-                                border: '1px solid rgba(0, 245, 255, 0.25)',
-                                transition: 'all 0.3s ease',
-                                cursor: 'pointer',
-                                '&:hover': {
-                                    backgroundColor: 'rgba(0, 245, 255, 0.08)',
-                                    borderColor: 'primary.main',
-                                    transform: 'translateX(8px)',
-                                },
-                            }}
-                        >
-                            <ListItemAvatar>
-                                <Avatar
-                                    src={coin.image}
-                                    alt={coin.name}
-                                    sx={{ width: 48, height: 48 }}
-                                />
-                            </ListItemAvatar>
-                            <ListItemText
-                                primary={
-                                    <Typography variant="h6">
-                                        {coin.name}
-                                    </Typography>
-                                }
-                                secondary={
-                                    <Typography variant="body2" color="text.secondary">
-                                        {coin.symbol?.toUpperCase()}
-                                    </Typography>
-                                }
-                            />
-                        </ListItem>
-                    ))}
-                </List>
-            </DialogContent>
-            <DialogActions sx={{ p: 2 }}>
-                <Button
-                    onClick={props.onClose}
-                    variant="outlined"
-                    startIcon={<Close />}
-                    fullWidth
-                    sx={{
-                        borderColor: 'rgba(255, 255, 255, 0.3)',
-                        '&:hover': {
-                            borderColor: 'rgba(255, 255, 255, 0.5)',
-                            backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                        },
-                    }}
-                >
-                    Cancel
-                </Button>
-            </DialogActions>
-        </Dialog>
-    );
+          Cancel
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
 }

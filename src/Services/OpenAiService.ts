@@ -1,6 +1,6 @@
-import { appConfig } from "../Utils/AppConfig";
+import { appConfig } from "../Сonfig/appConfig";
 import OpenAI from "openai";
-import { CoinRecommendationData } from "../Models/ApiTypes";
+import { CoinRecommendationData } from "../Models/apiTypes";
 
 /**
  * Response type for AI-generated cryptocurrency recommendations
@@ -42,11 +42,11 @@ class OpenAiService {
 		return this.client;
 	}
 
-    /**
-     * Generic method to get chat completions from GPT model
-     * @param messages - Array of chat messages with roles and content
-     */
-    public async getChatCompletions(messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[]): Promise<OpenAI.Chat.Completions.ChatCompletionMessage> {
+	/**
+	 * Generic method to get chat completions from GPT model
+	 * @param messages - Array of chat messages with roles and content
+	 */
+	public async getChatCompletions(messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[]): Promise<OpenAI.Chat.Completions.ChatCompletionMessage> {
 		const response = await this.getClient().chat.completions.create({
 			model: appConfig.OpenAIRecommendationModel,
 			messages: messages,
@@ -56,7 +56,7 @@ class OpenAiService {
 			throw new Error("OpenAI returned an empty response");
 		}
 		return message;
-    }
+	}
 
 	/**
 	 * Analyzes cryptocurrency data and provides a buy/sell recommendation using GPT
@@ -122,7 +122,7 @@ Your response must be in the following JSON format:
 			}
 
 			const parsed = JSON.parse(jsonContent) as RecommendationResponse;
-			
+
 			// Validate the response format
 			if (parsed.recommendation === "buy" || parsed.recommendation === "do not buy") {
 				return parsed;

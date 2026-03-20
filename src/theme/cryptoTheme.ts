@@ -49,6 +49,13 @@ declare module '@mui/material/styles' {
 			neonMagenta: string;
 			glowCyan: string;
 			glowMagenta: string;
+			glassBackground: string;
+			glassBackgroundStrong: string;
+			glassBorder: string;
+			glassBorderStrong: string;
+			cardGradient: string;
+			selectedCardGradient: string;
+			selectedCardGlow: string;
 		};
 	}
 
@@ -59,6 +66,13 @@ declare module '@mui/material/styles' {
 			neonMagenta?: string;
 			glowCyan?: string;
 			glowMagenta?: string;
+			glassBackground?: string;
+			glassBackgroundStrong?: string;
+			glassBorder?: string;
+			glassBorderStrong?: string;
+			cardGradient?: string;
+			selectedCardGradient?: string;
+			selectedCardGlow?: string;
 		};
 	}
 }
@@ -70,6 +84,15 @@ export const cryptoTheme = createTheme({
 		neonMagenta,
 		glowCyan,
 		glowMagenta,
+		glassBackground: glassDark,
+		glassBackgroundStrong: 'rgba(5, 8, 16, 0.94)',
+		glassBorder,
+		glassBorderStrong: 'rgba(0, 245, 255, 0.35)',
+		cardGradient:
+			'linear-gradient(145deg, rgba(10, 14, 26, 0.9) 0%, rgba(5, 8, 16, 0.95) 100%)',
+		selectedCardGradient:
+			'linear-gradient(145deg, rgba(0, 245, 255, 0.12) 0%, rgba(255, 0, 170, 0.06) 100%)',
+		selectedCardGlow: '0 0 30px rgba(0, 245, 255, 0.25)',
 	},
 	palette: {
 		mode: 'dark',
@@ -131,7 +154,7 @@ export const cryptoTheme = createTheme({
 		h2: {
 			fontFamily: "'Orbitron', 'MainFont', sans-serif",
 			fontWeight: 600,
-			fontSize: '2.5rem',
+			fontSize: 'clamp(1.8rem, 4vw, 2.5rem)',
 			letterSpacing: '0.05em',
 			color: '#e0f7ff',
 		},
@@ -144,7 +167,7 @@ export const cryptoTheme = createTheme({
 		h4: {
 			fontFamily: "'Orbitron', 'MainFont', sans-serif",
 			fontWeight: 600,
-			fontSize: '1.5rem',
+			fontSize: 'clamp(1.1rem, 2.6vw, 1.5rem)',
 			letterSpacing: '0.03em',
 		},
 		body1: {
@@ -206,7 +229,8 @@ export const cryptoTheme = createTheme({
 		MuiCard: {
 			styleOverrides: {
 				root: {
-					background: 'linear-gradient(145deg, rgba(10, 14, 26, 0.9) 0%, rgba(5, 8, 16, 0.95) 100%)',
+					background:
+						'linear-gradient(145deg, rgba(10, 14, 26, 0.9) 0%, rgba(5, 8, 16, 0.95) 100%)',
 					backdropFilter: 'blur(20px)',
 					WebkitBackdropFilter: 'blur(20px)',
 					borderRadius: 12,
@@ -228,7 +252,7 @@ export const cryptoTheme = createTheme({
 					'&:hover': {
 						borderColor: 'rgba(0, 245, 255, 0.5)',
 						boxShadow: `0 0 30px ${glowCyan}, 0 0 0 1px rgba(0, 245, 255, 0.2)`,
-						transform: 'translateY(-4px)',
+						transform: 'translateY(-2px)',
 						'&::before': {
 							opacity: 1,
 							boxShadow: `0 0 15px ${neonCyan}`,

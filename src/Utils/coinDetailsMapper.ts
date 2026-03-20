@@ -1,5 +1,5 @@
-import { CoinsModel } from "../Models/CoinsModel";
-import { CoinGeckoCoinDetailsResponse } from "../Models/ApiTypes";
+import { CoinsModel } from "../Models/coinsModel";
+import { CoinGeckoCoinDetailsResponse } from "../Models/apiTypes";
 
 /**
  * Maps a CoinGecko coin-details API response into the app domain model (CoinsModel).

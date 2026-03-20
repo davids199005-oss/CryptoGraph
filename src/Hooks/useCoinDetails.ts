@@ -1,13 +1,18 @@
 import { useMemo, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { AppState } from "../Redux/AppState";
-import { CoinsModel } from "../Models/CoinsModel";
+import { CoinsModel } from "../Models/coinsModel";
 import { coinsService } from "../Services/CoinsService";
 
 export type UseCoinDetailsResult = {
     coin: CoinsModel | null | undefined;
     loading: boolean;
     error: string | null;
+};
+
+type CoinDetailsError = {
+    coinId: string;
+    message: string;
 };
 
 /**
@@ -23,45 +28,46 @@ export function useCoinDetails(coinId: string | undefined): UseCoinDetailsResult
     }, [coinId, allCoins]);
 
     const [detailCoin, setDetailCoin] = useState<CoinsModel | null>(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const [errorState, setErrorState] = useState<CoinDetailsError | null>(null);
+
+    const hasCurrentDetailCoin = detailCoin?.id === coinId;
+    const shouldFetch = Boolean(coinId && !coinFromStore && !hasCurrentDetailCoin);
+    const hasCurrentError = errorState?.coinId === coinId;
 
     useEffect(() => {
-        if (!coinId || coinFromStore || detailCoin?.id === coinId) {
+        if (!coinId || !shouldFetch || hasCurrentError) {
             return;
         }
+
         let cancelled = false;
-        setLoading(true);
-        setError(null);
+
         coinsService
             .getCoinDetailsAsModel(coinId)
             .then((model) => {
                 if (cancelled) return;
                 if (model) {
                     setDetailCoin(model);
-                    setError(null);
+                    setErrorState(null);
                 } else {
-                    setError("Failed to load coin");
                     setDetailCoin(null);
+                    setErrorState({ coinId, message: "Failed to load coin" });
                 }
             })
             .catch(() => {
                 if (!cancelled) {
-                    setError("Failed to load coin");
                     setDetailCoin(null);
+                    setErrorState({ coinId, message: "Failed to load coin" });
                 }
-            })
-            .finally(() => {
-                if (!cancelled) setLoading(false);
             });
+
         return () => {
             cancelled = true;
-            setDetailCoin(null);
-            setError(null);
         };
-    }, [coinId, coinFromStore, detailCoin?.id]);
+    }, [coinId, shouldFetch, hasCurrentError]);
 
-    const coin = coinFromStore ?? detailCoin;
+    const coin = coinFromStore ?? (hasCurrentDetailCoin ? detailCoin : null);
+    const loading = shouldFetch && !hasCurrentError;
+    const error = hasCurrentError && errorState ? errorState.message : null;
 
     return { coin, loading, error };
 }

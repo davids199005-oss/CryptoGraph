@@ -1,25 +1,25 @@
 import axios from "axios";
-import { CoinsModel } from "../Models/CoinsModel";
-import { appConfig } from "../Utils/AppConfig";
+import { CoinsModel } from "../Models/coinsModel";
+import { appConfig } from "../Сonfig/appConfig";
 import { mapCoinDetailsResponseToModel } from "../Utils/coinDetailsMapper";
 import {
-	CoinGeckoPriceResponse,
-	CoinGeckoCoinDetailsResponse,
-	CryptoComparePriceResponse,
-	CoinPriceData,
-	CoinRecommendationData,
-} from "../Models/ApiTypes";
+    CoinGeckoPriceResponse,
+    CoinGeckoCoinDetailsResponse,
+    CryptoComparePriceResponse,
+    CoinPriceData,
+    CoinRecommendationData,
+} from "../Models/apiTypes";
 
 /**
  * Service for fetching cryptocurrency data from CoinGecko and CryptoCompare APIs
  * Provides methods for retrieving coin prices, details, and market data
  */
 class CoinsService {
-	/**
-	 * Fetches the list of top cryptocurrencies with market data
-	 * @throws {Error} If the API request fails
-	 */
-	public async getCoinsList(): Promise<CoinsModel[]> {
+    /**
+     * Fetches the list of top cryptocurrencies with market data
+     * @throws {Error} If the API request fails
+     */
+    public async getCoinsList(): Promise<CoinsModel[]> {
         try {
             const response = await axios.get<CoinsModel[]>(appConfig.CoinListUrl);
             return response.data;
@@ -29,12 +29,12 @@ class CoinsService {
         }
     }
 
-	/**
-	 * Fetches current price for a single coin in multiple currencies
-	 * @param coinId - The coin identifier
-	 * @returns Price data in USD, EUR, and ILS, or null if request fails
-	 */
-	public async getCoinPrices(coinId: string): Promise<CoinPriceData | null> {
+    /**
+     * Fetches current price for a single coin in multiple currencies
+     * @param coinId - The coin identifier
+     * @returns Price data in USD, EUR, and ILS, or null if request fails
+     */
+    public async getCoinPrices(coinId: string): Promise<CoinPriceData | null> {
         try {
             const trimmedId = coinId.trim();
             if (!trimmedId) {
@@ -59,11 +59,11 @@ class CoinsService {
         }
     }
 
-	/**
-	 * Fetches detailed information about a coin
-	 * @param coinId - The coin identifier
-	 */
-	public async getCoinDetails(coinId: string): Promise<CoinGeckoCoinDetailsResponse | null> {
+    /**
+     * Fetches detailed information about a coin
+     * @param coinId - The coin identifier
+     */
+    public async getCoinDetails(coinId: string): Promise<CoinGeckoCoinDetailsResponse | null> {
         try {
             const trimmedId = coinId.trim();
             if (!trimmedId) {
@@ -80,11 +80,11 @@ class CoinsService {
         }
     }
 
-	/**
-	 * Fetches detailed information about a coin including market data
-	 * @param coinId - The coin identifier
-	 */
-	public async getCoinDetailsWithMarketData(coinId: string): Promise<CoinGeckoCoinDetailsResponse | null> {
+    /**
+     * Fetches detailed information about a coin including market data
+     * @param coinId - The coin identifier
+     */
+    public async getCoinDetailsWithMarketData(coinId: string): Promise<CoinGeckoCoinDetailsResponse | null> {
         try {
             const trimmedId = coinId.trim();
             if (!trimmedId) {
@@ -101,23 +101,23 @@ class CoinsService {
         }
     }
 
-	/**
-	 * Fetches coin details with market data and returns as CoinsModel.
-	 * @param coinId - The coin identifier
-	 * @returns CoinsModel or null if request fails or response is empty
-	 */
-	public async getCoinDetailsAsModel(coinId: string): Promise<CoinsModel | null> {
-		const response = await this.getCoinDetailsWithMarketData(coinId);
-		if (!response) return null;
-		return mapCoinDetailsResponseToModel(response, coinId);
-	}
+    /**
+     * Fetches coin details with market data and returns as CoinsModel.
+     * @param coinId - The coin identifier
+     * @returns CoinsModel or null if request fails or response is empty
+     */
+    public async getCoinDetailsAsModel(coinId: string): Promise<CoinsModel | null> {
+        const response = await this.getCoinDetailsWithMarketData(coinId);
+        if (!response) return null;
+        return mapCoinDetailsResponseToModel(response, coinId);
+    }
 
-	/**
-	 * Fetches prices for multiple coins in a single API request (optimized batch operation)
-	 * @param coinIds - Array of coin identifiers
-	 * @returns Map of coin ID to USD price
-	 */
-	public async getMultipleCoinsPrices(coinIds: string[]): Promise<Map<string, number>> {
+    /**
+     * Fetches prices for multiple coins in a single API request (optimized batch operation)
+     * @param coinIds - Array of coin identifiers
+     * @returns Map of coin ID to USD price
+     */
+    public async getMultipleCoinsPrices(coinIds: string[]): Promise<Map<string, number>> {
         try {
             const validIds = coinIds.map(id => id.trim()).filter(id => id.length > 0);
             if (validIds.length === 0) {
@@ -145,12 +145,12 @@ class CoinsService {
         }
     }
 
-	/**
-	 * Fetches prices for multiple coins by their symbols from CryptoCompare API
-	 * @param coins - Array of objects containing coin id and symbol
-	 * @returns Map of coin ID to USD price
-	 */
-	public async getMultipleCoinsPricesBySymbols(coins: { id: string; symbol: string }[]): Promise<Map<string, number>> {
+    /**
+     * Fetches prices for multiple coins by their symbols from CryptoCompare API
+     * @param coins - Array of objects containing coin id and symbol
+     * @returns Map of coin ID to USD price
+     */
+    public async getMultipleCoinsPricesBySymbols(coins: { id: string; symbol: string }[]): Promise<Map<string, number>> {
         try {
             const validCoins = coins
                 .map(coin => ({ id: coin.id.trim(), symbol: coin.symbol.trim() }))
@@ -182,12 +182,12 @@ class CoinsService {
         }
     }
 
-	/**
-	 * Fetches comprehensive market data for AI-powered recommendation analysis
-	 * @param coinId - The coin identifier
-	 */
-	public async getCoinDataForRecommendation(coinId: string): Promise<CoinRecommendationData | null> {
-		try {
+    /**
+     * Fetches comprehensive market data for AI-powered recommendation analysis
+     * @param coinId - The coin identifier
+     */
+    public async getCoinDataForRecommendation(coinId: string): Promise<CoinRecommendationData | null> {
+        try {
             const trimmedId = coinId.trim();
             if (!trimmedId) {
                 console.warn("Skipping recommendation lookup for empty coin id");
@@ -195,28 +195,28 @@ class CoinsService {
             }
 
             const url = appConfig.CoinDetailsUrl.replace("{id}", trimmedId);
-			const response = await axios.get<CoinGeckoCoinDetailsResponse>(url);
+            const response = await axios.get<CoinGeckoCoinDetailsResponse>(url);
 
-			const marketData = response.data.market_data;
-			if (!marketData) {
-				console.warn(`No market data available for coin: ${coinId}`);
-				return null;
-			}
+            const marketData = response.data.market_data;
+            if (!marketData) {
+                console.warn(`No market data available for coin: ${coinId}`);
+                return null;
+            }
 
-			return {
-				name: response.data.name || "",
-				current_price_usd: marketData.current_price?.usd ?? 0,
-				market_cap_usd: marketData.market_cap?.usd ?? 0,
-				volume_24h_usd: marketData.total_volume?.usd ?? 0,
-				price_change_percentage_30d_in_currency: marketData.price_change_percentage_30d_in_currency?.usd ?? 0,
-				price_change_percentage_60d_in_currency: marketData.price_change_percentage_60d_in_currency?.usd ?? 0,
-				price_change_percentage_200d_in_currency: marketData.price_change_percentage_200d_in_currency?.usd ?? 0,
-			};
-		} catch (error) {
-			console.error("Error fetching coin data for recommendation:", error);
-			return null;
-		}
-	}
+            return {
+                name: response.data.name || "",
+                current_price_usd: marketData.current_price?.usd ?? 0,
+                market_cap_usd: marketData.market_cap?.usd ?? 0,
+                volume_24h_usd: marketData.total_volume?.usd ?? 0,
+                price_change_percentage_30d_in_currency: marketData.price_change_percentage_30d_in_currency?.usd ?? 0,
+                price_change_percentage_60d_in_currency: marketData.price_change_percentage_60d_in_currency?.usd ?? 0,
+                price_change_percentage_200d_in_currency: marketData.price_change_percentage_200d_in_currency?.usd ?? 0,
+            };
+        } catch (error) {
+            console.error("Error fetching coin data for recommendation:", error);
+            return null;
+        }
+    }
 }
 
 export const coinsService = new CoinsService();

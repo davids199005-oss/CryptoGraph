@@ -10,7 +10,7 @@ import './index.css'
 import { Layout } from './Components/LayoutArea/Layout/Layout'
 import { BrowserRouter } from 'react-router-dom'
 import { store } from './Redux/Store'
-import { cryptoTheme } from './theme/cryptoTheme'
+import { cryptoTheme } from './Theme/cryptoTheme'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
