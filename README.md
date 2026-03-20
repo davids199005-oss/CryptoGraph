@@ -120,16 +120,7 @@ The build also creates `dist/404.html` automatically for proper client-side rout
 - OpenAI is currently called directly from the browser (`dangerouslyAllowBrowser`), which means the API key is exposed on the client side.
 - For production, move OpenAI calls to a backend service and keep the API key server-side only.
 
----
 
-## Roadmap
-
-- [ ] Move OpenAI requests to a backend service
-- [ ] Add tests (unit + integration)
-- [ ] Improve network error handling and retry strategy
-- [ ] Optimize bundle size (lazy routes / code splitting)
-
----
 
 ## Author
 
