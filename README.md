@@ -55,7 +55,7 @@ Create a `.env` file in the project root:
 
 ```bash
 VITE_OPENAI_API_KEY=your_openai_key
-VITE_OPENAI_MODEL=gpt-5-mini
+VITE_OPENAI_MODEL=gpt-4-mini
 ```
 
 ### 3) Run the development server
